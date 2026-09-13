@@ -16,6 +16,10 @@ function renderTopbar() {
   el('statRep').textContent = `${state.reputation.toFixed(1)} ${starString(state.reputation)}`;
   el('statLevel').textContent = computeLevel(state.totalRevenue);
   el('restaurantName').textContent = state.restaurantName;
+
+  const activeEvents = SEASONAL_EVENTS.filter(e => state.activeEvents.includes(e.id));
+  el('eventBadge').textContent = activeEvents.map(e => e.emoji).join(' ');
+  el('eventBadge').title = activeEvents.map(e => e.name).join(', ');
 }
 
 function patienceColor(ratio) {
@@ -192,6 +196,7 @@ function renderShop() {
       <button class="tab ${shopTab === 'recettes' ? 'active' : ''}" onclick="setShopTab('recettes')">📖 Recettes</button>
       <button class="tab ${shopTab === 'equipement' ? 'active' : ''}" onclick="setShopTab('equipement')">🏗️ Équipement</button>
       <button class="tab ${shopTab === 'decoration' ? 'active' : ''}" onclick="setShopTab('decoration')">✨ Décoration</button>
+      <button class="tab ${shopTab === 'evenement' ? 'active' : ''}" onclick="setShopTab('evenement')">🎄 Événement</button>
     </div>`;
 
   let body = '';
@@ -201,18 +206,25 @@ function renderShop() {
       const items = RECIPES.filter(r => r.cat === cat).map(r => {
         const owned = state.unlockedRecipes.includes(r.id);
         const locked = level < r.unlockLevel;
+        const eventInfo = r.event ? SEASONAL_EVENTS.find(e => e.id === r.event) : null;
+        let action;
+        if (owned) {
+          action = '<span class="badge">Sur la carte</span>';
+        } else if (eventInfo) {
+          action = `<span class="badge locked">🎄 Via l'événement</span>`;
+        } else {
+          action = `<button class="btn small" ${locked ? 'disabled' : ''} onclick="buyRecipe('${r.id}')">${r.unlockCost}€</button>`;
+        }
         return `
           <div class="shop-item ${owned ? 'owned' : ''}">
             <div class="shop-item-main">
               <span class="pick-emoji">${r.emoji}</span>
               <div>
-                <div class="shop-item-name">${r.name}</div>
-                <div class="shop-item-desc">Vente ${r.price}€ · Cuisson ${(r.cookTime / 1000).toFixed(0)}s ${locked ? `· Niveau ${r.unlockLevel} requis` : ''}</div>
+                <div class="shop-item-name">${r.name}${eventInfo ? ` <span class="event-tag">${eventInfo.emoji}</span>` : ''}</div>
+                <div class="shop-item-desc">Vente ${r.price}€ · Cuisson ${(r.cookTime / 1000).toFixed(0)}s ${!owned && !eventInfo && locked ? `· Niveau ${r.unlockLevel} requis` : ''}</div>
               </div>
             </div>
-            ${owned
-              ? '<span class="badge">Sur la carte</span>'
-              : `<button class="btn small" ${locked ? 'disabled' : ''} onclick="buyRecipe('${r.id}')">${r.unlockCost}€</button>`}
+            ${action}
           </div>`;
       }).join('');
       return `<h3>${CAT_LABELS[cat]}</h3><div class="shop-list">${items}</div>`;
@@ -288,6 +300,29 @@ function renderShop() {
             </div>
           </div>
           ${owned ? '<span class="badge">Installé</span>' : `<button class="btn small" ${locked ? 'disabled' : ''} onclick="buyDecor('${item.id}')">${item.cost}€</button>`}
+        </div>`;
+    }).join('')}</div>`;
+  }
+
+  if (shopTab === 'evenement') {
+    body = `<div class="shop-list">${SEASONAL_EVENTS.map(event => {
+      const active = state.activeEvents.includes(event.id);
+      const locked = level < event.unlockLevel;
+      const tooEarly = state.day < event.minDay;
+      const disabled = locked || tooEarly;
+      let note = '';
+      if (locked) note = `· Niveau ${event.unlockLevel} requis`;
+      else if (tooEarly) note = `· Disponible à partir du jour ${event.minDay}`;
+      return `
+        <div class="shop-item ${active ? 'owned' : ''}">
+          <div class="shop-item-main">
+            <span class="pick-emoji">${event.emoji}</span>
+            <div>
+              <div class="shop-item-name">${event.name}</div>
+              <div class="shop-item-desc">${event.desc} ${note}</div>
+            </div>
+          </div>
+          ${active ? '<span class="badge">Actif</span>' : `<button class="btn small" ${disabled ? 'disabled' : ''} onclick="buySeasonalEvent('${event.id}')">${event.cost}€</button>`}
         </div>`;
     }).join('')}</div>`;
   }

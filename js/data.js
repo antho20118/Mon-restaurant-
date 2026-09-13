@@ -16,6 +16,11 @@ const RECIPES = [
   { id: 'mousse_chocolat',  name: 'Mousse au chocolat',    cat: 'dessert', emoji: '🍫', price: 9,  cookTime: 4000, unlockLevel: 2, unlockCost: 150 },
   { id: 'tarte_tatin',      name: 'Tarte Tatin',           cat: 'dessert', emoji: '🥧', price: 11, cookTime: 5500, unlockLevel: 3, unlockCost: 250 },
   { id: 'profiteroles',     name: 'Profiteroles',          cat: 'dessert', emoji: '🍨', price: 13, cookTime: 6000, unlockLevel: 5, unlockCost: 500 },
+
+  // Menu de Noël — débloqué en une fois via l'onglet Événement de la boutique, pas à l'unité.
+  { id: 'veloute_chataignes', name: 'Velouté de châtaignes',     cat: 'entree',  emoji: '🌰', price: 11, cookTime: 4500, unlockLevel: 3, unlockCost: 0, event: 'noel' },
+  { id: 'dinde_marrons',      name: 'Dinde rôtie aux marrons',   cat: 'plat',    emoji: '🦃', price: 28, cookTime: 9000, unlockLevel: 3, unlockCost: 0, event: 'noel' },
+  { id: 'buche_noel',         name: 'Bûche de Noël',             cat: 'dessert', emoji: '🎂', price: 14, cookTime: 5500, unlockLevel: 3, unlockCost: 0, event: 'noel' },
 ];
 
 const CAT_LABELS = { entree: 'Entrées', plat: 'Plats', dessert: 'Desserts' };
@@ -34,6 +39,20 @@ const DECOR_ITEMS = [
   { id: 'eclairage',      name: 'Éclairage tamisé',   emoji: '🕯️', cost: 400, unlockLevel: 3, tipBonus: 0.10, desc: '+10% sur les pourboires' },
   { id: 'vaisselle_fine', name: 'Vaisselle fine',     emoji: '🍽️', cost: 600, unlockLevel: 4, tipBonus: 0.12, desc: '+12% sur les pourboires' },
   { id: 'terrasse',       name: 'Terrasse fleurie',   emoji: '🌸', cost: 900, unlockLevel: 5, tipBonus: 0.15, repBonus: 0.3, desc: '+15% pourboires, +0.3★ réputation' },
+];
+
+// Événements saisonniers : débloquent d'un coup un petit menu à thème exclusif.
+const SEASONAL_EVENTS = [
+  {
+    id: 'noel',
+    name: 'Menu de Noël',
+    emoji: '🎄',
+    cost: 350,
+    unlockLevel: 3,
+    minDay: 5,
+    tipBonus: 0.10,
+    desc: 'Débloque 3 plats de fête (velouté de châtaignes, dinde aux marrons, bûche de Noël) et une ambiance festive : +10% sur les pourboires tant que l\'événement est actif.',
+  },
 ];
 
 const SPEED_ITEMS = [

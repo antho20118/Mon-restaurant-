@@ -48,6 +48,8 @@ body {
   color: var(--wood-dark);
 }
 
+.event-badge { font-size: 1.1rem; }
+
 .stats { display: flex; gap: 16px; flex-wrap: wrap; }
 
 .stat {
@@ -261,6 +263,8 @@ body {
   font-weight: 700;
   white-space: nowrap;
 }
+.badge.locked { background: #8a7a6b; }
+.event-tag { font-size: 0.9rem; }
 
 .summary-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 1rem; }
 .levelup { color: var(--gold); font-weight: 700; }

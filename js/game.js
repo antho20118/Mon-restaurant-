@@ -11,11 +11,12 @@ function defaultState() {
     day: 1,
     totalRevenue: 0,
     reputation: 3.0,
-    unlockedRecipes: RECIPES.filter(r => r.unlockCost === 0).map(r => r.id),
+    unlockedRecipes: RECIPES.filter(r => r.unlockCost === 0 && !r.event).map(r => r.id),
     stations: 1,
     seats: 3,
     purchasedDecor: [],
     purchasedSpeed: [],
+    activeEvents: [],
   };
 }
 
@@ -64,6 +65,10 @@ function tipMultiplier() {
   state.purchasedDecor.forEach(id => {
     const item = DECOR_ITEMS.find(d => d.id === id);
     if (item) mult += item.tipBonus;
+  });
+  state.activeEvents.forEach(id => {
+    const event = SEASONAL_EVENTS.find(e => e.id === id);
+    if (event) mult += event.tipBonus;
   });
   return mult;
 }
@@ -312,7 +317,7 @@ function serveDish(dishId) {
 
 function buyRecipe(id) {
   const recipe = recipeById(id);
-  if (!recipe || state.unlockedRecipes.includes(id)) return;
+  if (!recipe || recipe.event || state.unlockedRecipes.includes(id)) return;
   const level = computeLevel(state.totalRevenue);
   if (level < recipe.unlockLevel) { toast(`🔒 Niveau ${recipe.unlockLevel} requis`); return; }
   if (state.money < recipe.unlockCost) { toast('💸 Fonds insuffisants'); return; }
@@ -359,6 +364,24 @@ function buyDecor(id) {
   state.purchasedDecor.push(id);
   if (item.repBonus) state.reputation = clamp(state.reputation + item.repBonus, 0, 5);
   toast(`✨ ${item.name} installé !`);
+  saveState();
+  renderShop();
+  render();
+}
+
+function buySeasonalEvent(id) {
+  const event = SEASONAL_EVENTS.find(e => e.id === id);
+  if (!event || state.activeEvents.includes(id)) return;
+  const level = computeLevel(state.totalRevenue);
+  if (level < event.unlockLevel) { toast(`🔒 Niveau ${event.unlockLevel} requis`); return; }
+  if (state.day < event.minDay) { toast(`🔒 Disponible à partir du jour ${event.minDay}`); return; }
+  if (state.money < event.cost) { toast('💸 Fonds insuffisants'); return; }
+  state.money -= event.cost;
+  state.activeEvents.push(id);
+  RECIPES.filter(r => r.event === id).forEach(r => {
+    if (!state.unlockedRecipes.includes(r.id)) state.unlockedRecipes.push(r.id);
+  });
+  toast(`${event.emoji} ${event.name} activé ! Nouveaux plats sur la carte.`);
   saveState();
   renderShop();
   render();
