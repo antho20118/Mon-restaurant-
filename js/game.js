@@ -18,6 +18,7 @@ function defaultState() {
     purchasedSpeed: [],
     activeEvents: [],
     soundEnabled: true,
+    onboardingDone: false,
   };
 }
 
@@ -417,9 +418,11 @@ function resetGame() {
   initStations();
   closeModal();
   render();
+  maybeShowOnboarding();
 }
 
 // Démarrage
 initStations();
 setInterval(tick, TICK_MS);
 render();
+maybeShowOnboarding();

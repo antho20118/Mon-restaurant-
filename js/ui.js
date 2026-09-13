@@ -318,6 +318,87 @@ function showDaySummary(levelBefore, finishedDay) {
   openModal(html);
 }
 
+// ---------- Onboarding : courte introduction pour un nouveau joueur ----------
+
+const ONBOARDING_SLIDES = [
+  {
+    emoji: '👋',
+    title: 'Bienvenue chez Antho !',
+    body: `Vous reprenez un petit restaurant. Chaque service : des clients
+      arrivent, vous cuisinez leurs plats, vous les servez à temps. Simple à
+      apprendre, difficile à optimiser !`,
+  },
+  {
+    emoji: '🔥',
+    title: 'En cuisine',
+    body: `Cliquez sur un poste libre puis choisissez un plat demandé. La
+      barre de cuisson traverse trois zones : <span class="hl-red">rouge</span>
+      = trop tôt, <span class="hl-green">verte</span> = dressage parfait,
+      grise = correct mais moins soigné. Cliquez sur <strong>Dresser</strong>
+      au bon moment !`,
+  },
+  {
+    emoji: '🍽️',
+    title: 'Le service',
+    body: `Le plat prêt part automatiquement au client le plus impatient qui
+      l'a commandé. Servir vite et bien rapporte plus d'argent et de
+      réputation ⭐ — trop lent, le client s'en va fâché.`,
+  },
+  {
+    emoji: '🛒',
+    title: 'Faire grandir le restaurant',
+    body: `Entre deux services, la <strong>Boutique</strong> permet de
+      débloquer recettes, matériel et décoration avec l'argent gagné.
+      Bon appétit, chef !`,
+  },
+];
+
+let onboardingStep = 0;
+
+function maybeShowOnboarding() {
+  if (!state.onboardingDone) showOnboarding();
+}
+
+function showOnboarding() {
+  onboardingStep = 0;
+  renderOnboardingStep();
+}
+
+function renderOnboardingStep() {
+  const slide = ONBOARDING_SLIDES[onboardingStep];
+  const isLast = onboardingStep === ONBOARDING_SLIDES.length - 1;
+  const dots = ONBOARDING_SLIDES.map((_, i) =>
+    `<span class="step-dot ${i === onboardingStep ? 'active' : ''}"></span>`).join('');
+  const html = `
+    <div class="onboarding">
+      <div class="onboarding-emoji">${slide.emoji}</div>
+      <h2>${slide.title}</h2>
+      <p>${slide.body}</p>
+      <div class="onboarding-steps">${dots}</div>
+      <div class="modal-actions">
+        <button class="btn" onclick="finishOnboarding()">Passer l'intro</button>
+        <button class="btn primary" onclick="onboardingNext()">${isLast ? "C'est parti ! 👨‍🍳" : 'Suivant →'}</button>
+      </div>
+    </div>
+  `;
+  openModal(html);
+}
+
+function onboardingNext() {
+  if (onboardingStep < ONBOARDING_SLIDES.length - 1) {
+    onboardingStep++;
+    renderOnboardingStep();
+  } else {
+    finishOnboarding();
+  }
+}
+
+function finishOnboarding() {
+  state.onboardingDone = true;
+  saveState();
+  closeModal();
+}
+
 let shopTab = 'recettes';
 
 function openShop() {
