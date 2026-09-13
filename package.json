@@ -1,0 +1,12 @@
+{
+  "name": "chez-antho",
+  "private": true,
+  "description": "Prototype de simulateur de restaurant, en JavaScript vanilla.",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "http-server": "14.1.1"
+  }
+}
