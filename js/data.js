@@ -85,6 +85,7 @@ const COIN_PACKS = [
   { id: 'coins_s', name: 'Petite caisse',  emoji: '💰', priceUSD: 4.99,  coins: 500 },
   { id: 'coins_m', name: 'Caisse moyenne', emoji: '💵', priceUSD: 9.99,  coins: 1200 },
   { id: 'coins_l', name: 'Grosse caisse',  emoji: '💎', priceUSD: 19.99, coins: 3000 },
+  { id: 'coins_xl', name: 'Caisse du patron', emoji: '👑', priceUSD: 49.99, coins: 9000, badge: 'Meilleure offre' },
 ];
 
 const GAMEPASSES = [

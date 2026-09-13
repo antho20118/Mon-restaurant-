@@ -656,11 +656,11 @@ function renderShop() {
     ).join('');
 
     const packs = COIN_PACKS.map(p => `
-      <div class="shop-item">
+      <div class="shop-item ${p.badge ? 'featured' : ''}">
         <div class="shop-item-main">
           <span class="pick-emoji">${p.emoji}</span>
           <div>
-            <div class="shop-item-name">${p.name}</div>
+            <div class="shop-item-name">${p.name} ${p.badge ? `<span class="pack-badge">${p.badge}</span>` : ''}</div>
             <div class="shop-item-desc">+${p.coins}€ dans la caisse du restaurant</div>
           </div>
         </div>
