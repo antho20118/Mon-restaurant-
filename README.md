@@ -101,6 +101,33 @@ js/ui.js        Rendu DOM et interactions (séparé de la logique de jeu)
   la patience des clients, la progression de cuisson, l'apparition de
   nouveaux clients et la fin de journée.
 
+## Tests
+
+Le jeu lui-même reste sans dépendance (voir "Comment jouer" ci-dessus) ;
+`package.json` n'existe que pour la suite de tests, inutile pour simplement
+jouer.
+
+```
+npm install     # installe Playwright (une seule fois)
+npm test        # lance toute la suite (démarre et arrête le serveur seul)
+```
+
+- `tests/` contient un test [Playwright](https://playwright.dev) par grande
+  fonctionnalité (boucle de cuisson/service, menus combo, défi du jour,
+  bonus de connexion, introduction, simulation d'achats) : chaque fichier
+  pilote de vraies interactions dans un vrai navigateur (Chromium) contre
+  le jeu servi statiquement, sans mock.
+- `tests/helpers.js` centralise l'injection d'une sauvegarde dans
+  `localStorage` avant chargement (`gotoWithSave`), pour démarrer chaque
+  test dans un état précis plutôt que de rejouer toute la progression.
+- Un click sur un élément de `#customerList`/`#stationList`/`#readyList`
+  utilise `{ force: true }` : ces listes sont entièrement redessinées à
+  chaque tick (100 ms), ce qui empêche les vérifications de stabilité par
+  défaut de Playwright d'aboutir alors que l'élément est bien cliquable.
+- Le workflow GitHub Actions (`.github/workflows/ci.yml`) installe
+  Chromium et lance `npm test` à chaque pull request et à chaque push sur
+  `main`, avec le rapport HTML publié en artefact en cas d'échec.
+
 ## Différenciateur produit
 
 L'idée pitchée est de miser sur une **authenticité culinaire réelle** plutôt
