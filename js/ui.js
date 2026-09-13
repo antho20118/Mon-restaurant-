@@ -510,6 +510,7 @@ function renderShop() {
       <button class="tab ${shopTab === 'equipement' ? 'active' : ''}" onclick="setShopTab('equipement')">🏗️ Équipement</button>
       <button class="tab ${shopTab === 'decoration' ? 'active' : ''}" onclick="setShopTab('decoration')">✨ Décoration</button>
       <button class="tab ${shopTab === 'evenement' ? 'active' : ''}" onclick="setShopTab('evenement')">🎄 Événement</button>
+      <button class="tab ${shopTab === 'premium' ? 'active' : ''}" onclick="setShopTab('premium')">💳 Premium (démo)</button>
     </div>`;
 
   let body = '';
@@ -526,7 +527,11 @@ function renderShop() {
         } else if (eventInfo) {
           action = `<span class="badge locked">🎄 Via l'événement</span>`;
         } else {
-          action = `<button class="btn small" ${locked ? 'disabled' : ''} onclick="buyRecipe('${r.id}')">${r.unlockCost}€</button>`;
+          action = `
+            <div class="shop-actions">
+              <button class="btn small" ${locked ? 'disabled' : ''} onclick="buyRecipe('${r.id}')">${r.unlockCost}€</button>
+              <button class="btn small instant" onclick="buyInstantUnlock('recipe', '${r.id}')" title="Débloquer instantanément (simulation d'achat)">⚡ ${instantUnlockPrice(r.unlockCost).toFixed(2)}$</button>
+            </div>`;
         }
         return `
           <div class="shop-item ${owned ? 'owned' : ''}">
@@ -612,7 +617,12 @@ function renderShop() {
               <div class="shop-item-desc">${item.desc} ${locked ? `· Niveau ${item.unlockLevel} requis` : ''}</div>
             </div>
           </div>
-          ${owned ? '<span class="badge">Installé</span>' : `<button class="btn small" ${locked ? 'disabled' : ''} onclick="buyDecor('${item.id}')">${item.cost}€</button>`}
+          ${owned
+            ? '<span class="badge">Installé</span>'
+            : `<div class="shop-actions">
+                <button class="btn small" ${locked ? 'disabled' : ''} onclick="buyDecor('${item.id}')">${item.cost}€</button>
+                <button class="btn small instant" onclick="buyInstantUnlock('decor', '${item.id}')" title="Débloquer instantanément (simulation d'achat)">⚡ ${instantUnlockPrice(item.cost).toFixed(2)}$</button>
+              </div>`}
         </div>`;
     }).join('')}</div>`;
   }
@@ -638,6 +648,58 @@ function renderShop() {
           ${active ? '<span class="badge">Actif</span>' : `<button class="btn small" ${disabled ? 'disabled' : ''} onclick="buySeasonalEvent('${event.id}')">${event.cost}€</button>`}
         </div>`;
     }).join('')}</div>`;
+  }
+
+  if (shopTab === 'premium') {
+    const topups = PREMIUM_TOPUPS.map(t =>
+      `<button class="btn small premium" onclick="buyPremiumTopup('${t.id}')">💳 Recharger ${t.label}</button>`
+    ).join('');
+
+    const packs = COIN_PACKS.map(p => `
+      <div class="shop-item">
+        <div class="shop-item-main">
+          <span class="pick-emoji">${p.emoji}</span>
+          <div>
+            <div class="shop-item-name">${p.name}</div>
+            <div class="shop-item-desc">+${p.coins}€ dans la caisse du restaurant</div>
+          </div>
+        </div>
+        <button class="btn small premium" onclick="buyCoinPack('${p.id}')">${p.priceUSD.toFixed(2)}$</button>
+      </div>`).join('');
+
+    const passes = GAMEPASSES.map(g => {
+      const owned = state.purchasedGamepasses.includes(g.id);
+      return `
+        <div class="shop-item ${owned ? 'owned' : ''}">
+          <div class="shop-item-main">
+            <span class="pick-emoji">${g.emoji}</span>
+            <div>
+              <div class="shop-item-name">${g.name}</div>
+              <div class="shop-item-desc">${g.desc}</div>
+            </div>
+          </div>
+          ${owned ? '<span class="badge">Actif</span>' : `<button class="btn small premium" onclick="buyGamepass('${g.id}')">${g.priceUSD.toFixed(2)}$</button>`}
+        </div>`;
+    }).join('');
+
+    body = `
+      <div class="premium-disclaimer">
+        🧪 <strong>Simulation</strong> — aucun paiement réel n'est traité ici, aucune carte
+        bancaire n'est demandée. Cet onglet illustre juste à quoi ressemblerait une
+        monétisation par achats intégrés (packs de pièces, pass permanent, déblocage
+        instantané) dans une version publiée du jeu.
+      </div>
+      <div class="premium-wallet">💳 Portefeuille de démo : <strong>${state.premiumWalletDemo.toFixed(2)}$</strong></div>
+      <h3>Recharger (démo)</h3>
+      <div class="premium-topups">${topups}</div>
+      <h3>Packs de pièces</h3>
+      <div class="shop-list">${packs}</div>
+      <h3>Pass permanent</h3>
+      <div class="shop-list">${passes}</div>
+      <p class="premium-note">💡 Dans les onglets Recettes et Décoration, le bouton ⚡ permet
+        de débloquer instantanément un item avec ce portefeuille de démo, sans attendre le
+        niveau ou l'argent du restaurant.</p>
+    `;
   }
 
   const html = `

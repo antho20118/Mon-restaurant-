@@ -73,6 +73,24 @@ const COMBO_CHANCE = 0.35;
 const COMBO_PATIENCE_FACTOR = 1.6; // les clients qui attendent deux plats sont un peu plus patients
 const COMBO_BONUS_RATE = 0.15; // bonus sur le prix des deux plats quand le menu complet est servi
 
+// Simulation d'achats en argent réel — AUCUN paiement n'est traité, purement illustratif
+// (pas de carte bancaire, pas de réseau) pour visualiser un modèle de monétisation.
+const PREMIUM_TOPUPS = [
+  { id: 'topup_s', label: '4,99 $', amount: 4.99 },
+  { id: 'topup_m', label: '9,99 $', amount: 9.99 },
+  { id: 'topup_l', label: '19,99 $', amount: 19.99 },
+];
+
+const COIN_PACKS = [
+  { id: 'coins_s', name: 'Petite caisse',  emoji: '💰', priceUSD: 4.99,  coins: 500 },
+  { id: 'coins_m', name: 'Caisse moyenne', emoji: '💵', priceUSD: 9.99,  coins: 1200 },
+  { id: 'coins_l', name: 'Grosse caisse',  emoji: '💎', priceUSD: 19.99, coins: 3000 },
+];
+
+const GAMEPASSES = [
+  { id: 'pass_chef', name: 'Pass Chef étoilé', emoji: '⭐', priceUSD: 6.99, tipBonus: 0.10, desc: 'Bonus permanent : +10% sur tous les pourboires, pour toujours.' },
+];
+
 // Bonus de connexion : une récompense par jour calendaire réel (pas par jour de service),
 // croissante avec la série de jours consécutifs, qui reboucle après une semaine.
 const LOGIN_BONUS_REWARDS = [20, 30, 40, 60, 80, 100, 150];
