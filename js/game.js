@@ -225,6 +225,7 @@ function startCookingStation(stationIndex, recipeId) {
   st.recipeId = recipeId;
   st.progress = 0;
   st.cookTime = recipe.cookTime * cookSpeedMultiplier();
+  if (recipe.special === 'pizza') playSound('pizza');
   closeModal();
   render();
 }
