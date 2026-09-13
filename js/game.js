@@ -17,6 +17,7 @@ function defaultState() {
     purchasedDecor: [],
     purchasedSpeed: [],
     activeEvents: [],
+    soundEnabled: true,
   };
 }
 
@@ -120,6 +121,7 @@ function startDay() {
   runtime.dayDuration = computeDayDuration();
   runtime.dayTimeLeft = runtime.dayDuration;
   runtime.spawnTimer = 800;
+  playSound('start');
   render();
 }
 
@@ -175,6 +177,7 @@ function loseCustomer(c) {
   state.reputation = clamp(state.reputation - 0.15, 0, 5);
   const names = c.order.filter(id => !c.served.includes(id)).map(id => recipeById(id).name).join(' + ');
   toast(`😡 Un client est parti (voulait ${names || 'un plat'})`);
+  playSound('lost');
 }
 
 function tick() {
@@ -242,6 +245,7 @@ function onDressClick(stationIndex) {
   else quality = 'bon';
   finishCooking(st, quality);
   render();
+  return quality;
 }
 
 // ---------- Service ----------
@@ -261,6 +265,8 @@ function serveDish(dishId) {
   });
 
   let pay, repChange, msg;
+  let comboBonus = 0;
+  let comboCompleted = false;
   if (candidate) {
     const patienceRatio = clamp(candidate.patienceLeft / candidate.patienceMax, 0, 1);
     pay = recipe.price * qualityInfo.mult * (0.7 + 0.3 * patienceRatio) * tipMultiplier();
@@ -285,14 +291,15 @@ function serveDish(dishId) {
 
     if (complete) {
       runtime.stats.served++;
+      comboCompleted = isCombo;
       if (isCombo) {
         const base = candidate.order.reduce((sum, id) => sum + recipeById(id).price, 0);
-        const bonus = Math.round(base * COMBO_BONUS_RATE * tipMultiplier() * 100) / 100;
-        state.money = Math.round((state.money + bonus) * 100) / 100;
-        state.totalRevenue += bonus;
-        runtime.stats.revenue += bonus;
+        comboBonus = Math.round(base * COMBO_BONUS_RATE * tipMultiplier() * 100) / 100;
+        state.money = Math.round((state.money + comboBonus) * 100) / 100;
+        state.totalRevenue += comboBonus;
+        runtime.stats.revenue += comboBonus;
         state.reputation = clamp(state.reputation + 0.03, 0, 5);
-        toast(`🎉 Menu complet servi ! Bonus +${bonus.toFixed(2)}€`);
+        toast(`🎉 Menu complet servi ! Bonus +${comboBonus.toFixed(2)}€`);
       }
     }
   } else {
@@ -310,7 +317,7 @@ function serveDish(dishId) {
   toast(msg);
   saveState();
   render();
-  return newLevel;
+  return { pay: pay + comboBonus, comboBonus, comboCompleted, newLevel };
 }
 
 // ---------- Boutique ----------

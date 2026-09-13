@@ -40,6 +40,7 @@
       <button id="btnStartDay" class="btn primary" onclick="startDay()">▶️ Ouvrir le service</button>
       <div id="dayTimerWrap" class="hidden"><div id="dayTimerBar"></div></div>
       <button id="btnShop" class="btn" onclick="openShop()">🛒 Boutique</button>
+      <button id="btnSound" class="btn small" onclick="toggleSound()" title="Activer/couper le son">🔊</button>
       <button id="btnReset" class="btn small" onclick="resetGame()" title="Recommencer une nouvelle partie">↺ Réinitialiser</button>
     </footer>
 
@@ -49,6 +50,8 @@
 
     <div id="toastContainer"></div>
   </div>
+
+  <div id="fxLayer" aria-hidden="true"></div>
 
   <script src="js/data.js"></script>
   <script src="js/ui.js"></script>
