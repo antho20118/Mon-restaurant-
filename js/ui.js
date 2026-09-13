@@ -42,6 +42,7 @@ const SOUND_RECIPES = {
   lost:    [[300, 0, 0.1, 'sawtooth', 0.09], [220, 0.09, 0.18, 'sawtooth', 0.09]],
   levelup: [[520, 0, 0.1, 'triangle', 0.13], [660, 0.1, 0.1, 'triangle', 0.13], [780, 0.2, 0.1, 'triangle', 0.13], [1040, 0.3, 0.3, 'triangle', 0.15]],
   start:   [[440, 0, 0.15, 'sine', 0.1]],
+  challenge: [[988, 0, 0.1, 'triangle', 0.13], [1318, 0.1, 0.24, 'triangle', 0.14]],
   // Petit air façon mandoline pour l'ouverture du spectacle du pizzaiolo.
   pizza: [
     [784, 0,    0.09, 'triangle', 0.1], [659, 0.1,  0.09, 'triangle', 0.1],
@@ -103,10 +104,43 @@ function spawnBurst(x, y, emojis) {
 
 function render() {
   renderTopbar();
+  renderChallenge();
   renderCustomers();
   renderStations();
   renderReady();
   renderControlBar();
+}
+
+function renderChallenge() {
+  const bar = el('challengeBar');
+  if (!bar) return;
+  const challenge = state.dailyChallenge;
+  const type = challenge && CHALLENGE_TYPES.find(t => t.id === challenge.typeId);
+  if (!challenge || !type) { bar.innerHTML = ''; return; }
+
+  const label = type.label(challenge.target);
+
+  if (challenge.typeId === 'no_miss') {
+    const missed = runtime.stats.missed;
+    const ok = missed <= challenge.target;
+    bar.innerHTML = `
+      <span class="challenge-emoji">${type.emoji}</span>
+      <span class="challenge-label">Défi du jour : ${label}</span>
+      <span class="challenge-status ${ok ? 'ok' : 'fail'}">${missed} perdu${missed > 1 ? 's' : ''}</span>
+      <span class="challenge-reward">🎁 +${challenge.reward}€</span>
+    `;
+    return;
+  }
+
+  const progress = Math.min(challengeProgressValue(challenge), challenge.target);
+  const pct = challenge.target > 0 ? clamp((progress / challenge.target) * 100, 0, 100) : 100;
+  bar.innerHTML = `
+    <span class="challenge-emoji">${type.emoji}</span>
+    <span class="challenge-label">Défi du jour : ${label}</span>
+    <div class="challenge-progress-track"><div class="challenge-progress-fill" style="width:${pct}%"></div></div>
+    <span class="challenge-progress-text">${progress}/${challenge.target}</span>
+    <span class="challenge-reward">🎁 +${challenge.reward}€</span>
+  `;
 }
 
 function renderTopbar() {
@@ -298,9 +332,20 @@ function chooseRecipeForStation(stationIndex) {
   openModal(html);
 }
 
-function showDaySummary(levelBefore, finishedDay) {
+function showDaySummary(levelBefore, finishedDay, challenge, challengeSuccess) {
   const levelAfter = computeLevel(state.totalRevenue);
   if (levelAfter > levelBefore) playSound('levelup');
+  else if (challengeSuccess) playSound('challenge');
+
+  let challengeHtml = '';
+  if (challenge) {
+    const type = CHALLENGE_TYPES.find(t => t.id === challenge.typeId);
+    const label = type ? type.label(challenge.target) : '';
+    challengeHtml = challengeSuccess
+      ? `<p class="challenge-result success">✅ Défi réussi : ${label} — bonus +${challenge.reward}€</p>`
+      : `<p class="challenge-result fail">❌ Défi manqué : ${label}</p>`;
+  }
+
   const html = `
     <h2>📋 Bilan du jour ${finishedDay}</h2>
     <ul class="summary-list">
@@ -309,6 +354,7 @@ function showDaySummary(levelBefore, finishedDay) {
       <li>💰 Recette du jour : ${runtime.stats.revenue.toFixed(2)}€</li>
       <li>⭐ Réputation actuelle : ${state.reputation.toFixed(1)} ${starString(state.reputation)}</li>
     </ul>
+    ${challengeHtml}
     ${levelAfter > levelBefore ? `<p class="levelup">🏅 Niveau supérieur ! Vous êtes maintenant niveau ${levelAfter}.</p>` : ''}
     <div class="modal-actions">
       <button class="btn primary" onclick="openShop()">🛒 Aller à la boutique</button>

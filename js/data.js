@@ -73,6 +73,17 @@ const COMBO_CHANCE = 0.35;
 const COMBO_PATIENCE_FACTOR = 1.6; // les clients qui attendent deux plats sont un peu plus patients
 const COMBO_BONUS_RATE = 0.15; // bonus sur le prix des deux plats quand le menu complet est servi
 
+// Défi du jour : un objectif tiré au sort chaque jour, avec une récompense en argent.
+const CHALLENGE_TYPES = [
+  { id: 'serve_count',   emoji: '🍽️', baseTarget: 5,  perLevel: 1,   label: t => `Servir au moins ${t} plats` },
+  { id: 'serve_perfect', emoji: '🤩', baseTarget: 2,  perLevel: 0.5, label: t => `Réussir ${t} dressage${t > 1 ? 's' : ''} "Parfait"` },
+  { id: 'no_miss',       emoji: '😌', baseTarget: 0,  perLevel: 0,   label: () => `Ne laisser partir aucun client fâché` },
+  { id: 'earn_money',    emoji: '💰', baseTarget: 60, perLevel: 15,  label: t => `Encaisser au moins ${t}€ de recette` },
+  { id: 'combo_count',   emoji: '📋', baseTarget: 1,  perLevel: 0,   label: t => `Servir ${t} menu${t > 1 ? 's' : ''} complet${t > 1 ? 's' : ''}`, minLevel: COMBO_MIN_LEVEL },
+];
+const CHALLENGE_REWARD_BASE = 40;
+const CHALLENGE_REWARD_PER_LEVEL = 8;
+
 const QUALITY = {
   rate:    { mult: 0.7, label: 'Raté',      emoji: '😖' },
   bon:     { mult: 1.0, label: 'Bien cuit', emoji: '🙂' },

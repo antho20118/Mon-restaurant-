@@ -19,6 +19,7 @@ function defaultState() {
     activeEvents: [],
     soundEnabled: true,
     onboardingDone: false,
+    dailyChallenge: null,
   };
 }
 
@@ -35,7 +36,7 @@ let runtime = {
   customers: [],
   stations: [],
   readyDishes: [],
-  stats: { served: 0, missed: 0, revenue: 0 },
+  stats: { served: 0, missed: 0, revenue: 0, perfectCount: 0, comboCount: 0 },
 };
 
 function loadState() {
@@ -91,6 +92,34 @@ function starString(rep) {
   return '⭐'.repeat(clamp(full, 0, 5)) + '☆'.repeat(clamp(5 - full, 0, 5));
 }
 
+// ---------- Défi du jour ----------
+
+function pickDailyChallenge() {
+  const level = computeLevel(state.totalRevenue);
+  const eligible = CHALLENGE_TYPES.filter(c => !c.minLevel || level >= c.minLevel);
+  const type = eligible[Math.floor(Math.random() * eligible.length)];
+  const target = Math.round(type.baseTarget + type.perLevel * (level - 1));
+  const reward = Math.round(CHALLENGE_REWARD_BASE + CHALLENGE_REWARD_PER_LEVEL * (level - 1));
+  return { typeId: type.id, target, reward };
+}
+
+function challengeProgressValue(challenge) {
+  switch (challenge.typeId) {
+    case 'serve_count': return runtime.stats.served;
+    case 'serve_perfect': return runtime.stats.perfectCount;
+    case 'no_miss': return runtime.stats.missed;
+    case 'earn_money': return runtime.stats.revenue;
+    case 'combo_count': return runtime.stats.comboCount;
+    default: return 0;
+  }
+}
+
+function challengeSucceeded(challenge) {
+  if (!challenge) return false;
+  if (challenge.typeId === 'no_miss') return runtime.stats.missed <= challenge.target;
+  return challengeProgressValue(challenge) >= challenge.target;
+}
+
 // ---------- Cycle de service ----------
 
 function initStations() {
@@ -115,7 +144,7 @@ function startDay() {
   initStations();
   runtime.active = true;
   runtime.paused = false;
-  runtime.stats = { served: 0, missed: 0, revenue: 0 };
+  runtime.stats = { served: 0, missed: 0, revenue: 0, perfectCount: 0, comboCount: 0 };
   runtime.customers = [];
   runtime.readyDishes = [];
   runtime.stations.forEach(st => { st.busy = false; st.recipeId = null; st.progress = 0; });
@@ -134,9 +163,15 @@ function endDay() {
   runtime.active = false;
   const levelBefore = computeLevel(state.totalRevenue);
   const finishedDay = state.day;
+  const challenge = state.dailyChallenge;
+  const challengeSuccess = challengeSucceeded(challenge);
+  if (challenge && challengeSuccess) {
+    state.money = Math.round((state.money + challenge.reward) * 100) / 100;
+  }
   state.day++;
+  state.dailyChallenge = pickDailyChallenge();
   saveState();
-  showDaySummary(levelBefore, finishedDay);
+  showDaySummary(levelBefore, finishedDay, challenge, challengeSuccess);
 }
 
 function pickComboOrder() {
@@ -245,6 +280,7 @@ function onDressClick(stationIndex) {
   if (st.progress < 0.75) quality = 'rate';
   else if (st.progress < 0.95) quality = 'parfait';
   else quality = 'bon';
+  if (quality === 'parfait') runtime.stats.perfectCount++;
   finishCooking(st, quality);
   render();
   return quality;
@@ -295,6 +331,7 @@ function serveDish(dishId) {
       runtime.stats.served++;
       comboCompleted = isCombo;
       if (isCombo) {
+        runtime.stats.comboCount++;
         const base = candidate.order.reduce((sum, id) => sum + recipeById(id).price, 0);
         comboBonus = Math.round(base * COMBO_BONUS_RATE * tipMultiplier() * 100) / 100;
         state.money = Math.round((state.money + comboBonus) * 100) / 100;
@@ -414,7 +451,8 @@ function resetGame() {
   if (!confirm('Recommencer une nouvelle partie ? Toute la progression sera perdue.')) return;
   localStorage.removeItem(SAVE_KEY);
   state = defaultState();
-  runtime = { active: false, paused: false, dayDuration: 0, dayTimeLeft: 0, spawnTimer: 0, nextCustomerId: 1, nextDishId: 1, customers: [], stations: [], readyDishes: [], stats: { served: 0, missed: 0, revenue: 0 } };
+  state.dailyChallenge = pickDailyChallenge();
+  runtime = { active: false, paused: false, dayDuration: 0, dayTimeLeft: 0, spawnTimer: 0, nextCustomerId: 1, nextDishId: 1, customers: [], stations: [], readyDishes: [], stats: { served: 0, missed: 0, revenue: 0, perfectCount: 0, comboCount: 0 } };
   initStations();
   closeModal();
   render();
@@ -422,6 +460,7 @@ function resetGame() {
 }
 
 // Démarrage
+if (!state.dailyChallenge) { state.dailyChallenge = pickDailyChallenge(); saveState(); }
 initStations();
 setInterval(tick, TICK_MS);
 render();

@@ -60,6 +60,39 @@ body {
   white-space: nowrap;
 }
 
+.challenge-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: var(--cream);
+  border: 2px solid var(--wood);
+  border-radius: var(--radius);
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+.challenge-bar:empty { display: none; }
+.challenge-emoji { font-size: 1.2rem; }
+.challenge-label { font-weight: 600; color: var(--wood-dark); }
+.challenge-progress-track {
+  flex: 1;
+  min-width: 80px;
+  height: 8px;
+  background: #ddd0bd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.challenge-progress-fill { height: 100%; background: var(--gold); transition: width 0.2s linear; }
+.challenge-progress-text { font-weight: 700; white-space: nowrap; }
+.challenge-status { font-weight: 700; white-space: nowrap; }
+.challenge-status.ok { color: var(--green); }
+.challenge-status.fail { color: var(--red); }
+.challenge-reward { font-weight: 700; color: var(--gold); white-space: nowrap; }
+
+.challenge-result { font-weight: 700; }
+.challenge-result.success { color: var(--green); }
+.challenge-result.fail { color: var(--red); }
+
 #floor {
   display: grid;
   grid-template-columns: 1fr 1.2fr 1fr;
