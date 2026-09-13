@@ -91,6 +91,7 @@ body {
 }
 
 .customer-order { font-weight: 600; margin-bottom: 6px; }
+.order-done { opacity: 0.5; text-decoration: line-through; }
 
 .patience-track, .progress-track {
   position: relative;

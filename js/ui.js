@@ -32,11 +32,15 @@ function renderCustomers() {
     return;
   }
   container.innerHTML = list.map(c => {
-    const recipe = recipeById(c.recipeId);
     const ratio = clamp(c.patienceLeft / c.patienceMax, 0, 1);
+    const orderLine = c.order.map(id => {
+      const recipe = recipeById(id);
+      const done = c.served.includes(id);
+      return `<span class="${done ? 'order-done' : ''}">${recipe.emoji} ${recipe.name}${done ? ' ✓' : ''}</span>`;
+    }).join(' + ');
     return `
       <div class="customer-card">
-        <div class="customer-order">${recipe.emoji} <span>${recipe.name}</span></div>
+        <div class="customer-order">${c.order.length > 1 ? '📋 ' : ''}${orderLine}</div>
         <div class="patience-track"><div class="patience-fill" style="width:${(ratio * 100).toFixed(0)}%; background:${patienceColor(ratio)}"></div></div>
       </div>`;
   }).join('');
@@ -123,7 +127,9 @@ function closeModal() {
 
 function chooseRecipeForStation(stationIndex) {
   const wanted = {};
-  runtime.customers.forEach(c => { wanted[c.recipeId] = (wanted[c.recipeId] || 0) + 1; });
+  runtime.customers.forEach(c => {
+    c.order.forEach(id => { if (!c.served.includes(id)) wanted[id] = (wanted[id] || 0) + 1; });
+  });
 
   const wantedIds = Object.keys(wanted);
   const otherIds = state.unlockedRecipes.filter(id => !wantedIds.includes(id));
