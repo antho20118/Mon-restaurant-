@@ -30,7 +30,9 @@ La partie se sauvegarde automatiquement dans le navigateur (`localStorage`).
    dépenser vos gains : débloquer de nouvelles recettes (entrées, plats,
    desserts inspirés d'une vraie carte française), installer des postes de
    cuisson ou des tables supplémentaires, améliorer le matériel (temps de
-   cuisson) ou la décoration (pourboires, réputation).
+   cuisson) ou la décoration (pourboires, réputation). L'onglet **🎄 Événement**
+   permet de débloquer d'un coup le menu de Noël (3 plats exclusifs +
+   ambiance festive), à partir du niveau 3 et du jour 5.
 6. Le niveau du restaurant progresse avec le chiffre d'affaires cumulé et
    débloque progressivement du contenu plus avancé (et plus rentable).
 
@@ -74,9 +76,9 @@ que sur un habillage générique :
 
 - **Étapes de préparation détaillées par recette** (découpe, cuisson,
   assaisonnement, dressage) plutôt qu'un seul mini-jeu générique de timing.
-- **Événements saisonniers** (menu de Noël, terrasse d'été) avec recettes et
-  décors limités dans le temps — cohérent avec l'idée de monétisation par
-  événements.
+- **Autres événements saisonniers** (terrasse d'été, menu de Saint-Valentin…)
+  sur le modèle du menu de Noël déjà en place — cohérent avec l'idée de
+  monétisation par événements limités dans le temps.
 - **Portage Roblox** : ce prototype web sert de banc d'essai pour
   l'équilibrage (prix, temps de cuisson, coûts de déblocage, courbes de
   progression) avant réécriture en Luau. Les données de `js/data.js` sont
