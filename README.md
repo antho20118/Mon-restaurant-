@@ -35,9 +35,10 @@ passer) présente la cuisine, le service et la boutique.
    dépenser vos gains : débloquer de nouvelles recettes (entrées, plats,
    desserts inspirés d'une vraie carte française), installer des postes de
    cuisson ou des tables supplémentaires, améliorer le matériel (temps de
-   cuisson) ou la décoration (pourboires, réputation). L'onglet **🎄 Événement**
-   permet de débloquer d'un coup le menu de Noël (3 plats exclusifs +
-   ambiance festive), à partir du niveau 3 et du jour 5.
+   cuisson) ou la décoration (pourboires, réputation). L'onglet **Événement**
+   permet de débloquer d'un coup un menu à thème (3 plats exclusifs +
+   ambiance) : 🎄 Menu de Noël ou ☀️ Terrasse d'été, tous deux à partir du
+   niveau 3 et du jour 5.
 6. Le niveau du restaurant progresse avec le chiffre d'affaires cumulé et
    débloque progressivement du contenu plus avancé (et plus rentable).
 7. Un **défi du jour** est affiché en permanence juste sous l'en-tête
@@ -161,9 +162,10 @@ npm test        # lance toute la suite (démarre et arrête le serveur seul)
 
 - `tests/` contient un test [Playwright](https://playwright.dev) par grande
   fonctionnalité (boucle de cuisson/service, menus combo, défi du jour,
-  bonus de connexion, introduction, simulation d'achats) : chaque fichier
-  pilote de vraies interactions dans un vrai navigateur (Chromium) contre
-  le jeu servi statiquement, sans mock.
+  bonus de connexion, introduction, simulation d'achats, événements
+  saisonniers, protection multi-onglets) : chaque fichier pilote de vraies
+  interactions dans un vrai navigateur (Chromium) contre le jeu servi
+  statiquement, sans mock.
 - `tests/helpers.js` centralise l'injection d'une sauvegarde dans
   `localStorage` avant chargement (`gotoWithSave`), pour démarrer chaque
   test dans un état précis plutôt que de rejouer toute la progression.
@@ -190,9 +192,15 @@ que sur un habillage générique :
 
 - **Étapes de préparation détaillées par recette** (découpe, cuisson,
   assaisonnement, dressage) plutôt qu'un seul mini-jeu générique de timing.
-- **Autres événements saisonniers** (terrasse d'été, menu de Saint-Valentin…)
-  sur le modèle du menu de Noël déjà en place — cohérent avec l'idée de
-  monétisation par événements limités dans le temps.
+- **Encore d'autres événements saisonniers** (menu de Saint-Valentin…) sur le
+  modèle du menu de Noël et de la Terrasse d'été déjà en place — cohérent
+  avec l'idée de monétisation par événements limités dans le temps.
+- **Vrai playtest d'équilibrage** avec des joueurs externes : tous les
+  chiffres (prix, temps de cuisson, cibles de défi, seuils de niveau) sont
+  posés à dire d'expert et jamais validés en conditions réelles.
+- **Icônes de plats dessinées sur mesure** : la passe de direction
+  artistique n'a touché que l'habillage (marque, stats, typographie), pas
+  les emoji de contenu — un chantier à part de par son ampleur (16+ items).
 - **Portage Roblox** : ce prototype web sert de banc d'essai pour
   l'équilibrage (prix, temps de cuisson, coûts de déblocage, courbes de
   progression) avant réécriture en Luau. Les données de `js/data.js` sont
@@ -214,6 +222,9 @@ que sur un habillage générique :
   synthétisé directement en Web Audio, sans fichier audio à charger ; un
   bouton 🔊/🔇 dans la barre du bas permet de le couper.
 - Une seule sauvegarde locale par navigateur (pas de compte / cloud save).
+  Ouvrir le jeu dans deux onglets à la fois est détecté (événement
+  `storage`) : le second onglet cesse de sauvegarder et prévient l'utilisateur
+  plutôt que d'écraser silencieusement la progression la plus récente.
 - Économie et paliers de niveau posés à dire d'expert pour un prototype
   jouable ; à réajuster avec de vraies données de test joueurs.
 - Le bonus de connexion n'est vérifié qu'au chargement de la page (pas en

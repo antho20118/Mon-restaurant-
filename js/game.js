@@ -54,9 +54,21 @@ function loadState() {
   return defaultState();
 }
 
+// Si la partie est ouverte dans un autre onglet et modifiée là-bas, on arrête
+// de sauvegarder depuis celui-ci plutôt que d'écraser silencieusement la
+// progression la plus récente. L'utilisateur est prévenu et garde le choix.
+let tabConflictDetected = false;
+
 function saveState() {
+  if (tabConflictDetected) return;
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (e) { /* stockage indisponible */ }
 }
+
+window.addEventListener('storage', (e) => {
+  if (e.key !== SAVE_KEY || tabConflictDetected) return;
+  tabConflictDetected = true;
+  toast('⚠️ Partie modifiée dans un autre onglet : cette fenêtre ne sauvegardera plus, pour éviter d\'écraser votre progression. Fermez un des deux onglets.');
+});
 
 function recipeById(id) { return RECIPES.find(r => r.id === id); }
 

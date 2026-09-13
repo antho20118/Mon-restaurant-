@@ -23,6 +23,11 @@ const RECIPES = [
   { id: 'veloute_chataignes', name: 'Velouté de châtaignes',     cat: 'entree',  emoji: '🌰', price: 11, cookTime: 4500, unlockLevel: 3, unlockCost: 0, event: 'noel' },
   { id: 'dinde_marrons',      name: 'Dinde rôtie aux marrons',   cat: 'plat',    emoji: '🦃', price: 28, cookTime: 9000, unlockLevel: 3, unlockCost: 0, event: 'noel' },
   { id: 'buche_noel',         name: 'Bûche de Noël',             cat: 'dessert', emoji: '🎂', price: 14, cookTime: 5500, unlockLevel: 3, unlockCost: 0, event: 'noel' },
+
+  // Terrasse d'été — même principe, événement 'ete'.
+  { id: 'gaspacho',           name: 'Gaspacho andalou',          cat: 'entree',  emoji: '🍅', price: 10, cookTime: 4000, unlockLevel: 3, unlockCost: 0, event: 'ete' },
+  { id: 'salade_nicoise',     name: 'Salade niçoise',            cat: 'plat',    emoji: '🫒', price: 17, cookTime: 5000, unlockLevel: 3, unlockCost: 0, event: 'ete' },
+  { id: 'tarte_citron',       name: 'Tarte au citron meringuée', cat: 'dessert', emoji: '🍋', price: 13, cookTime: 5500, unlockLevel: 3, unlockCost: 0, event: 'ete' },
 ];
 
 const CAT_LABELS = { entree: 'Entrées', plat: 'Plats', dessert: 'Desserts' };
@@ -55,6 +60,16 @@ const SEASONAL_EVENTS = [
     minDay: 5,
     tipBonus: 0.10,
     desc: 'Débloque 3 plats de fête (velouté de châtaignes, dinde aux marrons, bûche de Noël) et une ambiance festive : +10% sur les pourboires tant que l\'événement est actif.',
+  },
+  {
+    id: 'ete',
+    name: "Terrasse d'été",
+    emoji: '☀️',
+    cost: 300,
+    unlockLevel: 3,
+    minDay: 5,
+    tipBonus: 0.10,
+    desc: 'Débloque 3 plats d\'été (gaspacho andalou, salade niçoise, tarte au citron meringuée) et une ambiance de terrasse : +10% sur les pourboires tant que l\'événement est actif.',
   },
 ];
 
