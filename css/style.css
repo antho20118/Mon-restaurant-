@@ -269,6 +269,18 @@ body {
 .summary-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 1rem; }
 .levelup { color: var(--gold); font-weight: 700; }
 
+.onboarding { text-align: center; }
+.onboarding-emoji { font-size: 3rem; line-height: 1; margin-bottom: 8px; }
+.onboarding h2 { margin-bottom: 10px; }
+.onboarding p { font-size: 1rem; line-height: 1.5; color: var(--wood-dark); }
+.onboarding .modal-actions { justify-content: center; }
+.hl-red { color: var(--red); font-weight: 700; }
+.hl-green { color: var(--green); font-weight: 700; }
+
+.onboarding-steps { display: flex; justify-content: center; gap: 6px; margin: 14px 0 4px; }
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd0bd; }
+.step-dot.active { background: var(--wood); }
+
 #toastContainer {
   position: fixed;
   bottom: 16px;

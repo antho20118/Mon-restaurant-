@@ -9,6 +9,8 @@ comme socle pour valider la boucle de jeu et le contenu culinaire avant un
 Aucune installation nécessaire : ouvrez `index.html` dans un navigateur
 (ou servez le dossier avec un petit serveur statique, ex. `npx http-server`).
 La partie se sauvegarde automatiquement dans le navigateur (`localStorage`).
+À la première visite, une courte introduction (4 écrans, possibilité de la
+passer) présente la cuisine, le service et la boutique.
 
 **Boucle de jeu :**
 1. Cliquez sur **▶️ Ouvrir le service** : des clients arrivent et commandent
