@@ -40,6 +40,7 @@ const DECOR_ITEMS = [
   { id: 'eclairage',      name: 'Éclairage tamisé',   emoji: '🕯️', cost: 400, unlockLevel: 3, tipBonus: 0.10, desc: '+10% sur les pourboires' },
   { id: 'vaisselle_fine', name: 'Vaisselle fine',     emoji: '🍽️', cost: 600, unlockLevel: 4, tipBonus: 0.12, desc: '+12% sur les pourboires' },
   { id: 'terrasse',       name: 'Terrasse fleurie',   emoji: '🌸', cost: 900, unlockLevel: 5, tipBonus: 0.15, repBonus: 0.3, desc: '+15% pourboires, +0.3★ réputation' },
+  { id: 'cave_a_vins',    name: 'Cave à vins vitrée', emoji: '🍷', cost: 1400, unlockLevel: 7, tipBonus: 0.18, desc: '+18% sur les pourboires' },
 ];
 
 // Événements saisonniers : débloquent d'un coup un petit menu à thème exclusif.
