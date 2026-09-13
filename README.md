@@ -40,6 +40,11 @@ passer) présente la cuisine, le service et la boutique.
    ambiance festive), à partir du niveau 3 et du jour 5.
 6. Le niveau du restaurant progresse avec le chiffre d'affaires cumulé et
    débloque progressivement du contenu plus avancé (et plus rentable).
+7. Un **défi du jour** est affiché en permanence juste sous l'en-tête
+   (servir un nombre de plats, réussir des dressages parfaits, ne perdre
+   aucun client, atteindre une recette, servir un menu complet…). Le
+   réussir avant la fin du service rapporte un bonus en argent annoncé au
+   bilan ; un nouveau défi est tiré au sort pour le jour suivant.
 
 ## Architecture du code
 
