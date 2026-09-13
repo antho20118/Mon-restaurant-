@@ -73,6 +73,10 @@ const COMBO_CHANCE = 0.35;
 const COMBO_PATIENCE_FACTOR = 1.6; // les clients qui attendent deux plats sont un peu plus patients
 const COMBO_BONUS_RATE = 0.15; // bonus sur le prix des deux plats quand le menu complet est servi
 
+// Bonus de connexion : une récompense par jour calendaire réel (pas par jour de service),
+// croissante avec la série de jours consécutifs, qui reboucle après une semaine.
+const LOGIN_BONUS_REWARDS = [20, 30, 40, 60, 80, 100, 150];
+
 // Défi du jour : un objectif tiré au sort chaque jour, avec une récompense en argent.
 const CHALLENGE_TYPES = [
   { id: 'serve_count',   emoji: '🍽️', baseTarget: 5,  perLevel: 1,   label: t => `Servir au moins ${t} plats` },
