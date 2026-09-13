@@ -131,14 +131,35 @@ function endDay() {
   showDaySummary(levelBefore, finishedDay);
 }
 
+function pickComboOrder() {
+  const entrees = state.unlockedRecipes.filter(id => recipeById(id).cat === 'entree');
+  const plats = state.unlockedRecipes.filter(id => recipeById(id).cat === 'plat');
+  if (entrees.length === 0 || plats.length === 0) return null;
+  const entree = entrees[Math.floor(Math.random() * entrees.length)];
+  const plat = plats[Math.floor(Math.random() * plats.length)];
+  return [entree, plat];
+}
+
 function spawnCustomer() {
   const pool = state.unlockedRecipes;
   if (pool.length === 0) return;
-  const recipeId = pool[Math.floor(Math.random() * pool.length)];
-  const patienceMax = clamp(22000 + (Math.random() * 6000 - 3000) + state.reputation * 800, 10000, 40000);
+
+  const level = computeLevel(state.totalRevenue);
+  let order = null;
+  if (level >= COMBO_MIN_LEVEL && Math.random() < COMBO_CHANCE) {
+    order = pickComboOrder();
+  }
+  if (!order) {
+    order = [pool[Math.floor(Math.random() * pool.length)]];
+  }
+
+  let patienceMax = clamp(22000 + (Math.random() * 6000 - 3000) + state.reputation * 800, 10000, 40000);
+  if (order.length > 1) patienceMax *= COMBO_PATIENCE_FACTOR;
+
   runtime.customers.push({
     id: runtime.nextCustomerId++,
-    recipeId,
+    order,
+    served: [],
     patienceMax,
     patienceLeft: patienceMax,
   });
@@ -147,8 +168,8 @@ function spawnCustomer() {
 function loseCustomer(c) {
   runtime.stats.missed++;
   state.reputation = clamp(state.reputation - 0.15, 0, 5);
-  const recipe = recipeById(c.recipeId);
-  toast(`😡 Un client est parti (voulait ${recipe ? recipe.name : 'un plat'})`);
+  const names = c.order.filter(id => !c.served.includes(id)).map(id => recipeById(id).name).join(' + ');
+  toast(`😡 Un client est parti (voulait ${names || 'un plat'})`);
 }
 
 function tick() {
@@ -229,7 +250,7 @@ function serveDish(dishId) {
 
   let candidate = null;
   runtime.customers.forEach(c => {
-    if (c.recipeId === dish.recipeId) {
+    if (c.order.includes(dish.recipeId) && !c.served.includes(dish.recipeId)) {
       if (!candidate || c.patienceLeft < candidate.patienceLeft) candidate = c;
     }
   });
@@ -241,21 +262,43 @@ function serveDish(dishId) {
     repChange = patienceRatio > 0.6 ? 0.05 : (patienceRatio > 0.3 ? 0.02 : -0.02);
     if (dish.quality === 'parfait') repChange += 0.03;
     if (dish.quality === 'rate') repChange -= 0.03;
-    runtime.customers = runtime.customers.filter(c => c.id !== candidate.id);
-    msg = `${qualityInfo.emoji} ${recipe.name} servi — +${pay.toFixed(2)}€`;
+
+    candidate.served.push(dish.recipeId);
+    const isCombo = candidate.order.length > 1;
+    const complete = candidate.order.every(id => candidate.served.includes(id));
+
+    if (complete) {
+      runtime.customers = runtime.customers.filter(c => c.id !== candidate.id);
+    }
+    msg = `${qualityInfo.emoji} ${recipe.name} servi${isCombo && !complete ? ' (1/2)' : ''} — +${pay.toFixed(2)}€`;
+
+    pay = Math.round(pay * 100) / 100;
+    state.money = Math.round((state.money + pay) * 100) / 100;
+    state.totalRevenue += pay;
+    state.reputation = clamp(state.reputation + repChange, 0, 5);
+    runtime.stats.revenue += pay;
+
+    if (complete) {
+      runtime.stats.served++;
+      if (isCombo) {
+        const base = candidate.order.reduce((sum, id) => sum + recipeById(id).price, 0);
+        const bonus = Math.round(base * COMBO_BONUS_RATE * tipMultiplier() * 100) / 100;
+        state.money = Math.round((state.money + bonus) * 100) / 100;
+        state.totalRevenue += bonus;
+        runtime.stats.revenue += bonus;
+        state.reputation = clamp(state.reputation + 0.03, 0, 5);
+        toast(`🎉 Menu complet servi ! Bonus +${bonus.toFixed(2)}€`);
+      }
+    }
   } else {
     // Personne n'attend plus ce plat : on le vend quand même, à moitié prix (repas du personnel).
-    pay = recipe.price * qualityInfo.mult * 0.5;
-    repChange = 0;
+    pay = Math.round(recipe.price * qualityInfo.mult * 0.5 * 100) / 100;
+    state.money = Math.round((state.money + pay) * 100) / 100;
+    state.totalRevenue += pay;
+    runtime.stats.revenue += pay;
     msg = `🍽️ ${recipe.name} non réclamé, vendu au personnel — +${pay.toFixed(2)}€`;
   }
 
-  pay = Math.round(pay * 100) / 100;
-  state.money = Math.round((state.money + pay) * 100) / 100;
-  state.totalRevenue += pay;
-  state.reputation = clamp(state.reputation + repChange, 0, 5);
-  runtime.stats.served++;
-  runtime.stats.revenue += pay;
   runtime.readyDishes.splice(dishIdx, 1);
 
   const newLevel = computeLevel(state.totalRevenue);

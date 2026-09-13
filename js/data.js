@@ -45,6 +45,12 @@ const SPEED_ITEMS = [
 // Chiffre d'affaires cumulé nécessaire pour atteindre le niveau N (index = niveau)
 const LEVEL_THRESHOLDS = [0, 0, 250, 700, 1500, 3000, 5500, 9500, 16000, 26000, 42000];
 
+// À partir de ce niveau, une partie des clients commandent un menu (entrée + plat)
+const COMBO_MIN_LEVEL = 4;
+const COMBO_CHANCE = 0.35;
+const COMBO_PATIENCE_FACTOR = 1.6; // les clients qui attendent deux plats sont un peu plus patients
+const COMBO_BONUS_RATE = 0.15; // bonus sur le prix des deux plats quand le menu complet est servi
+
 const QUALITY = {
   rate:    { mult: 0.7, label: 'Raté',      emoji: '😖' },
   bon:     { mult: 1.0, label: 'Bien cuit', emoji: '🙂' },

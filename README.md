@@ -23,7 +23,9 @@ La partie se sauvegarde automatiquement dans le navigateur (`localStorage`).
 4. Le plat prêt apparaît dans **Prêt à servir** : cliquez dessus pour le
    servir automatiquement au client le plus pressé qui l'a commandé. Vous
    gagnez de l'argent (+ pourboire selon rapidité et qualité) et de la
-   réputation.
+   réputation. À partir du niveau 4, certains clients commandent un **menu**
+   (entrée + plat) : ils restent à table après le premier plat servi et
+   partent avec un bonus une fois les deux reçus.
 5. À la fin du service, un bilan s'affiche puis la **🛒 Boutique** permet de
    dépenser vos gains : débloquer de nouvelles recettes (entrées, plats,
    desserts inspirés d'une vraie carte française), installer des postes de
@@ -70,8 +72,6 @@ que sur un habillage générique :
 
 ## Pistes d'évolution (roadmap)
 
-- **Menus/combos** : certains clients à haut niveau commandent un menu
-  entrée + plat, avec bonus si les deux sont servis ensemble.
 - **Étapes de préparation détaillées par recette** (découpe, cuisson,
   assaisonnement, dressage) plutôt qu'un seul mini-jeu générique de timing.
 - **Événements saisonniers** (menu de Noël, terrasse d'été) avec recettes et
