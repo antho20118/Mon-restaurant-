@@ -43,6 +43,7 @@ const SOUND_RECIPES = {
   levelup: [[520, 0, 0.1, 'triangle', 0.13], [660, 0.1, 0.1, 'triangle', 0.13], [780, 0.2, 0.1, 'triangle', 0.13], [1040, 0.3, 0.3, 'triangle', 0.15]],
   start:   [[440, 0, 0.15, 'sine', 0.1]],
   challenge: [[988, 0, 0.1, 'triangle', 0.13], [1318, 0.1, 0.24, 'triangle', 0.14]],
+  login: [[523, 0, 0.1, 'triangle', 0.12], [659, 0.09, 0.1, 'triangle', 0.12], [784, 0.18, 0.24, 'triangle', 0.14]],
   // Petit air façon mandoline pour l'ouverture du spectacle du pizzaiolo.
   pizza: [
     [784, 0,    0.09, 'triangle', 0.1], [659, 0.1,  0.09, 'triangle', 0.1],
@@ -148,6 +149,7 @@ function renderTopbar() {
   el('statDay').textContent = state.day;
   el('statRep').textContent = `${state.reputation.toFixed(1)} ${starString(state.reputation)}`;
   el('statLevel').textContent = computeLevel(state.totalRevenue);
+  el('statStreak').textContent = state.loginStreak;
   el('restaurantName').textContent = state.restaurantName;
 
   const activeEvents = SEASONAL_EVENTS.filter(e => state.activeEvents.includes(e.id));
@@ -401,8 +403,13 @@ const ONBOARDING_SLIDES = [
 
 let onboardingStep = 0;
 
-function maybeShowOnboarding() {
-  if (!state.onboardingDone) showOnboarding();
+// Point d'entrée unique au chargement : l'intro d'abord si besoin, sinon le bonus du jour directement.
+function bootstrapModals() {
+  if (!state.onboardingDone) {
+    showOnboarding();
+  } else {
+    maybeShowLoginBonus();
+  }
 }
 
 function showOnboarding() {
@@ -442,6 +449,43 @@ function onboardingNext() {
 function finishOnboarding() {
   state.onboardingDone = true;
   saveState();
+  closeModal();
+  maybeShowLoginBonus();
+}
+
+// ---------- Bonus de connexion quotidien ----------
+
+function maybeShowLoginBonus() {
+  const result = evaluateLoginBonus();
+  if (!result) return;
+  render();
+  showLoginBonusModal(result);
+}
+
+function showLoginBonusModal({ streak, reward }) {
+  playSound('login');
+  const dayLabel = streak > 1 ? `${streak} jours de suite` : 'Premier jour';
+  const html = `
+    <div class="onboarding">
+      <div class="onboarding-emoji">🎁</div>
+      <h2>Bonus de connexion !</h2>
+      <p>${dayLabel} — merci de votre fidélité, chef !</p>
+      <p class="login-reward">+${reward}€</p>
+      <div class="modal-actions">
+        <button class="btn primary" onclick="closeLoginBonus()">Merci !</button>
+      </div>
+    </div>
+  `;
+  openModal(html);
+}
+
+function closeLoginBonus() {
+  const target = el('statStreak');
+  if (target) {
+    const rect = target.getBoundingClientRect();
+    spawnFloatText(rect.left + rect.width / 2, rect.top, '🎁', 'fx-bonus');
+  }
+  playSound('coin');
   closeModal();
 }
 

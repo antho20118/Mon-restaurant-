@@ -20,6 +20,8 @@ function defaultState() {
     soundEnabled: true,
     onboardingDone: false,
     dailyChallenge: null,
+    lastLoginDate: null,
+    loginStreak: 0,
   };
 }
 
@@ -118,6 +120,36 @@ function challengeSucceeded(challenge) {
   if (!challenge) return false;
   if (challenge.typeId === 'no_miss') return runtime.stats.missed <= challenge.target;
   return challengeProgressValue(challenge) >= challenge.target;
+}
+
+// ---------- Bonus de connexion quotidien (jour calendaire réel) ----------
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function daysBetween(fromKey, toKey) {
+  const from = new Date(fromKey + 'T00:00:00');
+  const to = new Date(toKey + 'T00:00:00');
+  return Math.round((to - from) / 86400000);
+}
+
+// Vérifie le calendrier réel (pas le jour de service) : à appeler une fois par chargement.
+// Retourne {streak, reward} et met à jour/sauvegarde l'état si un bonus est dû, sinon null.
+function evaluateLoginBonus() {
+  const today = todayKey();
+  if (state.lastLoginDate === today) return null;
+
+  const gap = state.lastLoginDate ? daysBetween(state.lastLoginDate, today) : null;
+  const streak = gap === 1 ? state.loginStreak + 1 : 1;
+  const reward = LOGIN_BONUS_REWARDS[(streak - 1) % LOGIN_BONUS_REWARDS.length];
+
+  state.loginStreak = streak;
+  state.lastLoginDate = today;
+  state.money = Math.round((state.money + reward) * 100) / 100;
+  saveState();
+  return { streak, reward };
 }
 
 // ---------- Cycle de service ----------
@@ -456,7 +488,7 @@ function resetGame() {
   initStations();
   closeModal();
   render();
-  maybeShowOnboarding();
+  bootstrapModals();
 }
 
 // Démarrage
@@ -464,4 +496,4 @@ if (!state.dailyChallenge) { state.dailyChallenge = pickDailyChallenge(); saveSt
 initStations();
 setInterval(tick, TICK_MS);
 render();
-maybeShowOnboarding();
+bootstrapModals();

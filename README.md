@@ -45,6 +45,10 @@ passer) présente la cuisine, le service et la boutique.
    aucun client, atteindre une recette, servir un menu complet…). Le
    réussir avant la fin du service rapporte un bonus en argent annoncé au
    bilan ; un nouveau défi est tiré au sort pour le jour suivant.
+8. Un **bonus de connexion** (basé sur la date réelle, pas le jour de
+   service) est offert à chaque nouvelle visite : il grandit avec les
+   jours consécutifs (série affichée 🔥 dans l'en-tête) et se réinitialise
+   après une interruption.
 
 ## Architecture du code
 
@@ -110,3 +114,6 @@ que sur un habillage générique :
 - Une seule sauvegarde locale par navigateur (pas de compte / cloud save).
 - Économie et paliers de niveau posés à dire d'expert pour un prototype
   jouable ; à réajuster avec de vraies données de test joueurs.
+- Le bonus de connexion n'est vérifié qu'au chargement de la page (pas en
+  continu) : un onglet resté ouvert à cheval sur minuit n'accordera le
+  bonus du nouveau jour qu'au rechargement suivant.
