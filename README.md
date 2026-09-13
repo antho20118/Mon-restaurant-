@@ -94,7 +94,9 @@ que sur un habillage générique :
 
 - Pas d'assets graphiques (tout est en emoji) : volontaire pour se concentrer
   sur la boucle de jeu et l'équilibrage avant d'investir dans l'art.
-- Pas de son.
+- Le son (dressage réussi/raté, service, menu complet, montée de niveau) est
+  synthétisé directement en Web Audio, sans fichier audio à charger ; un
+  bouton 🔊/🔇 dans la barre du bas permet de le couper.
 - Une seule sauvegarde locale par navigateur (pas de compte / cloud save).
 - Économie et paliers de niveau posés à dire d'expert pour un prototype
   jouable ; à réajuster avec de vraies données de test joueurs.

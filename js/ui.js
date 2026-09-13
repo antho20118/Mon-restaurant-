@@ -2,6 +2,98 @@
 
 function el(id) { return document.getElementById(id); }
 
+// ---------- Son ("juice") : synthétisé via Web Audio, aucun fichier audio à charger ----------
+
+let audioCtx = null;
+
+function ensureAudio() {
+  if (!state.soundEnabled) return null;
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    try { audioCtx = new Ctx(); } catch (e) { return null; }
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// Débloque l'audio dès la première interaction (les navigateurs exigent un geste utilisateur).
+document.addEventListener('pointerdown', ensureAudio, { once: true });
+
+function playTone(ctx, freq, time, duration, type, peak) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.setValueAtTime(freq, time);
+  gain.gain.setValueAtTime(0, time);
+  gain.gain.linearRampToValueAtTime(peak, time + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(time);
+  osc.stop(time + duration + 0.02);
+}
+
+const SOUND_RECIPES = {
+  good:    [[660, 0, 0.12, 'sine', 0.12]],
+  parfait: [[660, 0, 0.09, 'triangle', 0.14], [880, 0.08, 0.12, 'triangle', 0.14], [1100, 0.16, 0.18, 'triangle', 0.14]],
+  rate:    [[220, 0, 0.22, 'sawtooth', 0.08]],
+  coin:    [[880, 0, 0.06, 'square', 0.08], [1320, 0.05, 0.1, 'square', 0.08]],
+  combo:   [[660, 0, 0.1, 'triangle', 0.12], [880, 0.08, 0.1, 'triangle', 0.12], [1100, 0.16, 0.1, 'triangle', 0.12], [1320, 0.24, 0.22, 'triangle', 0.14]],
+  lost:    [[300, 0, 0.1, 'sawtooth', 0.09], [220, 0.09, 0.18, 'sawtooth', 0.09]],
+  levelup: [[520, 0, 0.1, 'triangle', 0.13], [660, 0.1, 0.1, 'triangle', 0.13], [780, 0.2, 0.1, 'triangle', 0.13], [1040, 0.3, 0.3, 'triangle', 0.15]],
+  start:   [[440, 0, 0.15, 'sine', 0.1]],
+};
+
+function playSound(name) {
+  const ctx = ensureAudio();
+  if (!ctx) return;
+  const notes = SOUND_RECIPES[name];
+  if (!notes) return;
+  const now = ctx.currentTime;
+  notes.forEach(([freq, offset, duration, type, peak]) => playTone(ctx, freq, now + offset, duration, type, peak));
+}
+
+function toggleSound() {
+  state.soundEnabled = !state.soundEnabled;
+  saveState();
+  render();
+}
+
+// ---------- Effets visuels flottants ----------
+
+function spawnFloatText(x, y, text, cls) {
+  const layer = el('fxLayer');
+  if (!layer) return;
+  const span = document.createElement('span');
+  span.className = `fx-float ${cls || ''}`;
+  span.textContent = text;
+  span.style.left = `${x}px`;
+  span.style.top = `${y}px`;
+  layer.appendChild(span);
+  setTimeout(() => span.remove(), 1300);
+}
+
+function spawnBurst(x, y, emojis) {
+  const layer = el('fxLayer');
+  if (!layer) return;
+  const set = emojis || ['✨', '🌟', '🎉'];
+  const count = 7;
+  for (let i = 0; i < count; i++) {
+    const span = document.createElement('span');
+    span.className = 'fx-burst';
+    span.textContent = set[Math.floor(Math.random() * set.length)];
+    const angle = (Math.PI * 2 * i) / count + Math.random() * 0.4;
+    const dist = 36 + Math.random() * 28;
+    span.style.left = `${x}px`;
+    span.style.top = `${y}px`;
+    span.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
+    span.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
+    span.style.setProperty('--rot', `${Math.random() * 360 - 180}deg`);
+    layer.appendChild(span);
+    setTimeout(() => span.remove(), 1000);
+  }
+}
+
 function render() {
   renderTopbar();
   renderCustomers();
@@ -69,7 +161,7 @@ function renderStations() {
           <div class="progress-zones"></div>
           <div class="progress-fill" style="width:${pct}%"></div>
         </div>
-        <button class="btn small accent" onclick="onDressClick(${i})">🍽️ Dresser</button>
+        <button class="btn small accent" onclick="handleDressClick(${i}, this)">🍽️ Dresser</button>
       </div>`;
   }).join('');
 }
@@ -84,7 +176,7 @@ function renderReady() {
     const recipe = recipeById(dish.recipeId);
     const q = QUALITY[dish.quality];
     return `
-      <div class="dish-card q-${dish.quality}" onclick="handleServeDish(${dish.id})">
+      <div class="dish-card q-${dish.quality}" onclick="handleServeDish(${dish.id}, this)">
         <div class="dish-name">${recipe.emoji} ${recipe.name}</div>
         <div class="quality-tag">${q.emoji} ${q.label}</div>
       </div>`;
@@ -105,13 +197,37 @@ function renderControlBar() {
     btnStart.textContent = '▶️ Ouvrir le service';
     timerWrap.classList.add('hidden');
   }
+  el('btnSound').textContent = state.soundEnabled ? '🔊' : '🔇';
 }
 
-function handleServeDish(dishId) {
+function handleDressClick(stationIndex, buttonEl) {
+  const rect = buttonEl.getBoundingClientRect();
+  const quality = onDressClick(stationIndex);
+  if (quality === 'parfait') {
+    playSound('parfait');
+    spawnBurst(rect.left + rect.width / 2, rect.top, ['✨', '🌟']);
+    spawnFloatText(rect.left + rect.width / 2, rect.top, 'Parfait !', 'fx-bonus');
+  } else if (quality === 'rate') {
+    playSound('rate');
+  } else if (quality === 'bon') {
+    playSound('good');
+  }
+}
+
+function handleServeDish(dishId, cardEl) {
+  const rect = cardEl ? cardEl.getBoundingClientRect() : el('statMoney').getBoundingClientRect();
   const levelBefore = computeLevel(state.totalRevenue);
-  const newLevel = serveDish(dishId);
-  if (newLevel !== undefined && newLevel > levelBefore) {
-    toast(`🏅 Niveau ${newLevel} atteint !`);
+  const result = serveDish(dishId);
+  if (!result) return;
+
+  spawnFloatText(rect.left + rect.width / 2, rect.top, `+${result.pay.toFixed(2)}€`, result.comboCompleted ? 'fx-bonus' : '');
+  playSound(result.comboCompleted ? 'combo' : 'coin');
+
+  if (result.comboCompleted) {
+    spawnBurst(rect.left + rect.width / 2, rect.top);
+  }
+  if (result.newLevel > levelBefore) {
+    toast(`🏅 Niveau ${result.newLevel} atteint !`);
   }
 }
 
@@ -159,6 +275,7 @@ function chooseRecipeForStation(stationIndex) {
 
 function showDaySummary(levelBefore, finishedDay) {
   const levelAfter = computeLevel(state.totalRevenue);
+  if (levelAfter > levelBefore) playSound('levelup');
   const html = `
     <h2>📋 Bilan du jour ${finishedDay}</h2>
     <ul class="summary-list">

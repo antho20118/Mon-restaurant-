@@ -290,3 +290,48 @@ body {
   transition: opacity 0.6s ease;
 }
 .toast.fade-out { opacity: 0; }
+
+/* Couche d'effets visuels ("juice") : texte flottant et éclats, au-dessus de tout */
+#fxLayer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+  overflow: hidden;
+}
+
+.fx-float {
+  position: absolute;
+  transform: translate(-50%, 0);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--green);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+  animation: fx-rise 1.2s ease-out forwards;
+}
+.fx-float.fx-bonus { color: var(--gold); font-size: 1.3rem; }
+
+@keyframes fx-rise {
+  0%   { transform: translate(-50%, 0) scale(0.8); opacity: 0; }
+  15%  { transform: translate(-50%, -8px) scale(1.08); opacity: 1; }
+  100% { transform: translate(-50%, -60px) scale(1); opacity: 0; }
+}
+
+.fx-burst {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 1.5rem;
+  animation: fx-burst-anim 0.9s ease-out forwards;
+}
+
+@keyframes fx-burst-anim {
+  0%   { transform: translate(-50%, -50%) scale(0.4) rotate(0deg); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1) rotate(var(--rot)); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-float, .fx-burst { animation: fx-fade-only 1s ease-out forwards; }
+  @keyframes fx-fade-only { from { opacity: 1; } to { opacity: 0; } }
+}
