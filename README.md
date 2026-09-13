@@ -65,7 +65,8 @@ paiement (Stripe côté web, `MarketplaceService` côté Roblox).
   montant choisi — sans jamais demander d'information de paiement.
 - **Packs de pièces** : convertissent le portefeuille de démo en argent du
   restaurant (`state.money`), avec un taux qui s'améliore sur les gros packs
-  — le schéma classique des packs de monnaie premium.
+  — le schéma classique des packs de monnaie premium, jusqu'à la "Caisse du
+  patron" (49,99$, badge "Meilleure offre") pour les plus gros joueurs.
 - **Pass permanent** (`GAMEPASSES`) : un achat unique qui accorde un bonus
   pour toujours (ex. +10% de pourboires), à l'image d'un gamepass Roblox.
 - **Déblocage instantané** (bouton ⚡ dans les onglets Recettes et
