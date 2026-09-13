@@ -42,6 +42,13 @@ const SOUND_RECIPES = {
   lost:    [[300, 0, 0.1, 'sawtooth', 0.09], [220, 0.09, 0.18, 'sawtooth', 0.09]],
   levelup: [[520, 0, 0.1, 'triangle', 0.13], [660, 0.1, 0.1, 'triangle', 0.13], [780, 0.2, 0.1, 'triangle', 0.13], [1040, 0.3, 0.3, 'triangle', 0.15]],
   start:   [[440, 0, 0.15, 'sine', 0.1]],
+  // Petit air façon mandoline pour l'ouverture du spectacle du pizzaiolo.
+  pizza: [
+    [784, 0,    0.09, 'triangle', 0.1], [659, 0.1,  0.09, 'triangle', 0.1],
+    [784, 0.2,  0.09, 'triangle', 0.1], [659, 0.3,  0.09, 'triangle', 0.1],
+    [880, 0.42, 0.12, 'triangle', 0.12], [988, 0.55, 0.12, 'triangle', 0.12],
+    [784, 0.68, 0.28, 'triangle', 0.13],
+  ],
 };
 
 function playSound(name) {
@@ -142,6 +149,22 @@ function renderCustomers() {
   }).join('');
 }
 
+// Petit spectacle du pizzaiolo : pâte lancée en l'air, garniture, puis direction le four.
+function renderPizzaShow(progress) {
+  if (progress < 0.4) {
+    return `<div class="pizza-show"><span class="pizza-emoji pizza-spin">🫓</span></div>`;
+  }
+  if (progress < 0.75) {
+    const toppings = [
+      [0.45, '🍅'],
+      [0.58, '🧀'],
+      [0.68, '🌿'],
+    ].filter(([threshold]) => progress > threshold).map(([, emoji]) => `<span class="pizza-topping">${emoji}</span>`).join('');
+    return `<div class="pizza-show">🫓${toppings}</div>`;
+  }
+  return `<div class="pizza-show"><span class="pizza-emoji pizza-oven">🔥</span><span class="pizza-emoji">🍕</span></div>`;
+}
+
 function renderStations() {
   const container = el('stationList');
   container.innerHTML = runtime.stations.map((st, i) => {
@@ -154,14 +177,16 @@ function renderStations() {
     }
     const recipe = recipeById(st.recipeId);
     const pct = clamp(st.progress * 100, 0, 100);
+    const isPizza = recipe.special === 'pizza';
     return `
       <div class="station-card busy">
         <div class="station-title">Poste ${i + 1} — ${recipe.emoji} ${recipe.name}</div>
+        ${isPizza ? renderPizzaShow(st.progress) : ''}
         <div class="progress-track">
           <div class="progress-zones"></div>
           <div class="progress-fill" style="width:${pct}%"></div>
         </div>
-        <button class="btn small accent" onclick="handleDressClick(${i}, this)">🍽️ Dresser</button>
+        <button class="btn small accent" onclick="handleDressClick(${i}, this)">${isPizza ? '🍕 Sortir du four !' : '🍽️ Dresser'}</button>
       </div>`;
   }).join('');
 }

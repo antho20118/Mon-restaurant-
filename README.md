@@ -20,6 +20,9 @@ La partie se sauvegarde automatiquement dans le navigateur (`localStorage`).
    (rouge = trop tôt, verte = dressage parfait, grise = plat cuit mais moins
    soigné). Cliquez **🍽️ Dresser** au bon moment pour maximiser la qualité —
    un vrai petit geste de cuisine plutôt qu'une simple barre de chargement.
+   La Pizza Margherita a droit à son propre petit spectacle : le pizzaiolo
+   étale la pâte en mode acrobatique, la garnit, puis l'enfourne, sur un air
+   de mandoline.
 4. Le plat prêt apparaît dans **Prêt à servir** : cliquez dessus pour le
    servir automatiquement au client le plus pressé qui l'a commandé. Vous
    gagnez de l'argent (+ pourboire selon rapidité et qualité) et de la
