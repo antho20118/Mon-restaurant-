@@ -76,6 +76,28 @@ paiement (Stripe côté web, `MarketplaceService` côté Roblox).
   grille de progression gratuite sans la casser (le contenu reste le même,
   seul le délai pour y accéder change).
 
+## Direction artistique
+
+Une première passe volontairement ciblée sur l'habillage plutôt que sur le
+contenu (recréer les 16+ icônes de plats à la main est un chantier à part) :
+
+- **Typographie** : une paire Google Fonts dédiée — [Fraunces](https://fonts.google.com/specimen/Fraunces)
+  (chaleureux, avec du caractère) pour la marque, les titres et les gros
+  montants, [Work Sans](https://fonts.google.com/specimen/Work+Sans) pour le
+  reste de l'interface. Remplace la police système générique.
+- **Emblème de marque** : un monogramme "A" dans un médaillon (SVG inline,
+  aucun fichier image) remplace l'emoji 🍽️ générique en en-tête.
+- **Icônes de stats** : argent, jour, niveau et série de connexion ont
+  chacun une icône SVG au trait, dans une seule couleur cohérente avec la
+  palette — plutôt que des emoji qui varient d'un système à l'autre. La
+  réputation garde ses étoiles ⭐ (générées dynamiquement).
+- **Ambiance de fond** : une texture diagonale très subtile en CSS pur
+  (`repeating-linear-gradient`) apporte un peu de profondeur au dégradé
+  bois de l'arrière-plan.
+
+Tout est en SVG inline ou en CSS — aucun fichier image à héberger, cohérent
+avec le choix initial de zéro dépendance.
+
 ## Architecture du code
 
 Projet en JavaScript vanilla, sans dépendance ni étape de build, pour rester
@@ -159,8 +181,10 @@ que sur un habillage générique :
 
 ## Limites connues du prototype
 
-- Pas d'assets graphiques (tout est en emoji) : volontaire pour se concentrer
-  sur la boucle de jeu et l'équilibrage avant d'investir dans l'art.
+- Les recettes et éléments de jeu restent en emoji (volontaire, pour se
+  concentrer sur la boucle de jeu et l'équilibrage) ; seule l'habillage
+  (marque, icônes de stats, typographie) a reçu une passe de direction
+  artistique — voir la section dédiée ci-dessous.
 - Le son (dressage réussi/raté, service, menu complet, montée de niveau) est
   synthétisé directement en Web Audio, sans fichier audio à charger ; un
   bouton 🔊/🔇 dans la barre du bas permet de le couper.

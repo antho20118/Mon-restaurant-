@@ -36,12 +36,18 @@ function baseSave(overrides) {
 
 // Dépose une sauvegarde dans localStorage avant le premier script de la page,
 // puis navigue vers le jeu. Le jeu la charge à son démarrage (game.js: loadState()).
+//
+// waitUntil: 'domcontentloaded' plutôt que la valeur par défaut ('load') : la page
+// charge une police Google Fonts externe, dont on n'a pas besoin pour les tests de
+// logique, et dont l'attente peut être lente ou peu fiable selon le réseau — inutile
+// de faire dépendre chaque test d'une ressource tierce qui n'a aucun rapport avec ce
+// qui est vérifié.
 async function gotoWithSave(page, overrides) {
   const save = baseSave(overrides);
   await page.addInitScript((s) => {
     localStorage.setItem('restauTycoonSave_v1', JSON.stringify(s));
   }, save);
-  await page.goto('/index.html');
+  await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
 }
 
 module.exports = { SAVE_KEY, baseSave, gotoWithSave, dateKey };

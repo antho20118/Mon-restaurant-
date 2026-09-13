@@ -9,7 +9,7 @@ const { gotoWithSave, dateKey } = require('./helpers');
 
 test.describe('Introduction pour les nouveaux joueurs', () => {
   test('affichée à la toute première visite (aucune sauvegarde)', async ({ page }) => {
-    await page.goto('/index.html');
+    await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.onboarding h2')).toHaveText('Bienvenue chez Antho !');
   });
 
@@ -38,7 +38,7 @@ test.describe('Introduction pour les nouveaux joueurs', () => {
   });
 
   test('chaîne vers le bonus de connexion sur une toute première visite', async ({ page }) => {
-    await page.goto('/index.html');
+    await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
     await page.click('button:has-text("Passer l\'intro")');
     await expect(page.locator('#modalContent')).toContainText('Bonus de connexion');
   });
