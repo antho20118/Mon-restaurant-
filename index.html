@@ -10,13 +10,32 @@
 <body>
   <div id="app">
     <header id="topbar">
-      <div class="brand">🍽️ <span id="restaurantName">Chez Antho</span> <span id="eventBadge" class="event-badge"></span></div>
+      <div class="brand">
+        <svg class="brand-emblem" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="29" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+          <text x="32" y="43" text-anchor="middle" class="brand-emblem-letter">A</text>
+        </svg>
+        <span id="restaurantName">Chez Antho</span> <span id="eventBadge" class="event-badge"></span>
+      </div>
       <div class="stats">
-        <div class="stat">💰 <span id="statMoney">0</span>€</div>
-        <div class="stat">📅 Jour <span id="statDay">1</span></div>
+        <div class="stat">
+          <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.6"/></svg>
+          <span id="statMoney">0</span>€
+        </div>
+        <div class="stat">
+          <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="3" y1="9.5" x2="21" y2="9.5" stroke="currentColor" stroke-width="1.8"/><line x1="7" y1="3" x2="7" y2="7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="17" y1="3" x2="17" y2="7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Jour <span id="statDay">1</span>
+        </div>
         <div class="stat">⭐ <span id="statRep">3.0</span></div>
-        <div class="stat">🏅 Niv. <span id="statLevel">1</span></div>
-        <div class="stat" title="Jours de connexion consécutifs">🔥 <span id="statStreak">0</span></div>
+        <div class="stat">
+          <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v4a5 5 0 0 1-10 0V4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 5H4a3 3 0 0 0 3 3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M17 5h3a3 3 0 0 1-3 3" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="13" x2="12" y2="18" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="20" x2="16" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="12" y1="18" x2="12" y2="20" stroke="currentColor" stroke-width="1.8"/></svg>
+          Niv. <span id="statLevel">1</span>
+        </div>
+        <div class="stat" title="Jours de connexion consécutifs">
+          <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 3-3 4-3 8a3 3 0 0 0 6 0c0-1-1-2-1-3 2 1 3 3 3 5a5 5 0 0 1-10 0c0-4 3-6 5-10z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
+          <span id="statStreak">0</span>
+        </div>
       </div>
     </header>
 
@@ -59,5 +78,9 @@
   <script src="js/data.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/game.js"></script>
+
+  <!-- Après les scripts : une police décorative ne doit jamais retarder le jeu -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=Work+Sans:wght@400;500;600;700&display=swap">
 </body>
 </html>
