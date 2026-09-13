@@ -60,17 +60,17 @@
 
     <footer id="controlBar">
       <button id="btnStartDay" class="btn primary" onclick="startDay()">▶️ Ouvrir le service</button>
-      <div id="dayTimerWrap" class="hidden"><div id="dayTimerBar"></div></div>
+      <div id="dayTimerWrap" class="hidden" role="progressbar" aria-label="Temps de service restant" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div id="dayTimerBar"></div></div>
       <button id="btnShop" class="btn" onclick="openShop()">🛒 Boutique</button>
       <button id="btnSound" class="btn small" onclick="toggleSound()" title="Activer/couper le son">🔊</button>
       <button id="btnReset" class="btn small" onclick="resetGame()" title="Recommencer une nouvelle partie">↺ Réinitialiser</button>
     </footer>
 
     <div id="modalOverlay" class="overlay hidden">
-      <div id="modalContent" class="modal"></div>
+      <div id="modalContent" class="modal" role="dialog" aria-modal="true" tabindex="-1"></div>
     </div>
 
-    <div id="toastContainer"></div>
+    <div id="toastContainer" role="status" aria-live="polite"></div>
   </div>
 
   <div id="fxLayer" aria-hidden="true"></div>

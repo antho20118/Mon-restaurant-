@@ -98,6 +98,31 @@ contenu (recréer les 16+ icônes de plats à la main est un chantier à part) :
 Tout est en SVG inline ou en CSS — aucun fichier image à héberger, cohérent
 avec le choix initial de zéro dépendance.
 
+## Accessibilité
+
+- Tous les éléments cliquables sont de vrais `<button>` (le plat à servir
+  l'était encore comme un `<div>` cliquable jusqu'à cette passe) : focus et
+  activation au clavier (Tab, Entrée/Espace) fonctionnent partout, sans code
+  spécifique à écrire pour chacun.
+- **Focus visible** : un contour doré cohérent avec la palette (`:focus-visible`),
+  jamais supprimé.
+- **Modales** : à l'ouverture, le focus part sur la modale et le reste de la
+  page devient inerte (`inert`, supporté nativement par les navigateurs
+  récents) — impossible de tabuler vers un bouton masqué derrière l'overlay.
+  À la fermeture (bouton, ou touche **Échap**), le focus revient exactement
+  où il était.
+- **Barres de progression** (défi du jour, temps de service, cuisson) portent
+  `role="progressbar"` avec les valeurs courantes, pour un lecteur d'écran.
+- Les notifications (`#toastContainer`) sont dans une zone `aria-live="polite"`,
+  annoncées sans interrompre l'utilisateur.
+- Les icônes SVG décoratives (emblème, stats) sont `aria-hidden`, pour ne pas
+  polluer la navigation au lecteur d'écran avec des éléments purement visuels.
+
+Reste hors scope de cette passe : les emoji de contenu (plats, clients) ne
+sont pas doublés d'un texte alternatif dédié — ils font partie du langage
+visuel assumé du jeu — et aucun audit de contraste couleur exhaustif n'a été
+mené.
+
 ## Architecture du code
 
 Projet en JavaScript vanilla, sans dépendance ni étape de build, pour rester
