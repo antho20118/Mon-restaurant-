@@ -22,6 +22,8 @@ function defaultState() {
     dailyChallenge: null,
     lastLoginDate: null,
     loginStreak: 0,
+    premiumWalletDemo: 0,
+    purchasedGamepasses: [],
   };
 }
 
@@ -74,6 +76,10 @@ function tipMultiplier() {
   state.activeEvents.forEach(id => {
     const event = SEASONAL_EVENTS.find(e => e.id === id);
     if (event) mult += event.tipBonus;
+  });
+  state.purchasedGamepasses.forEach(id => {
+    const pass = GAMEPASSES.find(g => g.id === id);
+    if (pass && pass.tipBonus) mult += pass.tipBonus;
   });
   return mult;
 }
@@ -442,6 +448,81 @@ function buyDecor(id) {
   state.purchasedDecor.push(id);
   if (item.repBonus) state.reputation = clamp(state.reputation + item.repBonus, 0, 5);
   toast(`✨ ${item.name} installé !`);
+  saveState();
+  renderShop();
+  render();
+}
+
+// ---------- Simulation d'achats en argent réel (aucun paiement réel) ----------
+
+function buyPremiumTopup(id) {
+  const topup = PREMIUM_TOPUPS.find(t => t.id === id);
+  if (!topup) return;
+  state.premiumWalletDemo = Math.round((state.premiumWalletDemo + topup.amount) * 100) / 100;
+  toast(`💳 Simulation : +${topup.amount.toFixed(2)}$ ajoutés au portefeuille de démo`);
+  saveState();
+  renderShop();
+  render();
+}
+
+function buyCoinPack(id) {
+  const pack = COIN_PACKS.find(p => p.id === id);
+  if (!pack) return;
+  if (state.premiumWalletDemo < pack.priceUSD) { toast('💳 Solde de démo insuffisant — rechargez d\'abord'); return; }
+  state.premiumWalletDemo = Math.round((state.premiumWalletDemo - pack.priceUSD) * 100) / 100;
+  state.money = Math.round((state.money + pack.coins) * 100) / 100;
+  toast(`💰 +${pack.coins}€ crédités (achat simulé)`);
+  playSound('coin');
+  saveState();
+  renderShop();
+  render();
+}
+
+function buyGamepass(id) {
+  const pass = GAMEPASSES.find(g => g.id === id);
+  if (!pass || state.purchasedGamepasses.includes(id)) return;
+  if (state.premiumWalletDemo < pass.priceUSD) { toast('💳 Solde de démo insuffisant — rechargez d\'abord'); return; }
+  state.premiumWalletDemo = Math.round((state.premiumWalletDemo - pass.priceUSD) * 100) / 100;
+  state.purchasedGamepasses.push(id);
+  toast(`⭐ ${pass.name} activé (achat simulé) !`);
+  playSound('levelup');
+  saveState();
+  renderShop();
+  render();
+}
+
+// Prix de démo pour débloquer instantanément un item sinon soumis au niveau/à la grille normale.
+function instantUnlockPrice(cost) {
+  return Math.max(0.99, Math.round((Math.max(cost, 50) / 150) * 100) / 100);
+}
+
+function buyInstantUnlock(kind, id) {
+  let entity, alreadyOwned, cost;
+  if (kind === 'recipe') {
+    entity = recipeById(id);
+    if (!entity || entity.event) return;
+    alreadyOwned = state.unlockedRecipes.includes(id);
+    cost = entity.unlockCost;
+  } else {
+    entity = DECOR_ITEMS.find(d => d.id === id);
+    if (!entity) return;
+    alreadyOwned = state.purchasedDecor.includes(id);
+    cost = entity.cost;
+  }
+  if (alreadyOwned) return;
+
+  const price = instantUnlockPrice(cost);
+  if (state.premiumWalletDemo < price) { toast('💳 Solde de démo insuffisant — rechargez d\'abord'); return; }
+  state.premiumWalletDemo = Math.round((state.premiumWalletDemo - price) * 100) / 100;
+
+  if (kind === 'recipe') {
+    state.unlockedRecipes.push(id);
+  } else {
+    state.purchasedDecor.push(id);
+    if (entity.repBonus) state.reputation = clamp(state.reputation + entity.repBonus, 0, 5);
+  }
+  toast(`⚡ ${entity.name} débloqué instantanément (achat simulé) !`);
+  playSound('parfait');
   saveState();
   renderShop();
   render();

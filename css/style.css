@@ -8,6 +8,7 @@
   --red-dark: #9c2b1f;
   --gold: #d4a017;
   --green: #2e7d32;
+  --premium: #6c5ce7;
   --radius: 12px;
 }
 
@@ -193,6 +194,8 @@ body {
 .btn.small { padding: 6px 12px; font-size: 0.85rem; }
 .btn.primary { background: var(--red); }
 .btn.accent { background: var(--gold); color: var(--ink); }
+.btn.premium { background: var(--premium); color: white; }
+.btn.instant { background: var(--premium); color: white; padding: 6px 10px; font-size: 0.78rem; }
 
 #controlBar {
   display: flex;
@@ -287,6 +290,20 @@ body {
 .shop-item-main { display: flex; align-items: center; gap: 10px; }
 .shop-item-name { font-weight: 700; }
 .shop-item-desc { font-size: 0.8rem; color: #6b5a49; }
+.shop-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+
+.premium-disclaimer {
+  background: #fff3cd;
+  border: 1px solid #ffe69c;
+  color: #7a5c00;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  margin-bottom: 14px;
+}
+.premium-wallet { font-size: 1.1rem; font-weight: 700; color: var(--premium); margin-bottom: 10px; }
+.premium-topups { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.premium-note { font-size: 0.8rem; color: #6b5a49; margin-top: 10px; }
 .badge {
   background: var(--green);
   color: white;

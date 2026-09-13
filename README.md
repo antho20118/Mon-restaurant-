@@ -49,6 +49,31 @@ passer) présente la cuisine, le service et la boutique.
    service) est offert à chaque nouvelle visite : il grandit avec les
    jours consécutifs (série affichée 🔥 dans l'en-tête) et se réinitialise
    après une interruption.
+9. L'onglet **💳 Premium (démo)** de la boutique simule à quoi ressemblerait
+   une monétisation par achats intégrés — voir la section dédiée ci-dessous.
+
+## Simulation d'achats en argent réel
+
+⚠️ **Aucun paiement n'est traité** : pas de carte bancaire, pas de réseau,
+rien n'est réellement facturé. C'est une maquette pour visualiser le modèle
+économique évoqué dans le pitch de départ (gamepasses, accélérateurs,
+recettes exclusives), avant d'investir dans une vraie intégration de
+paiement (Stripe côté web, `MarketplaceService` côté Roblox).
+
+- Un **portefeuille de démo** (`state.premiumWalletDemo`, en `$` fictifs) se
+  recharge avec des boutons "Recharger" qui créditent instantanément le
+  montant choisi — sans jamais demander d'information de paiement.
+- **Packs de pièces** : convertissent le portefeuille de démo en argent du
+  restaurant (`state.money`), avec un taux qui s'améliore sur les gros packs
+  — le schéma classique des packs de monnaie premium.
+- **Pass permanent** (`GAMEPASSES`) : un achat unique qui accorde un bonus
+  pour toujours (ex. +10% de pourboires), à l'image d'un gamepass Roblox.
+- **Déblocage instantané** (bouton ⚡ dans les onglets Recettes et
+  Décoration) : paie un prix de démo proportionnel au coût normal pour
+  obtenir immédiatement un item sans attendre le niveau ou l'argent
+  nécessaire — l'exemple type d'un "accélérateur" payant qui contourne la
+  grille de progression gratuite sans la casser (le contenu reste le même,
+  seul le délai pour y accéder change).
 
 ## Architecture du code
 
