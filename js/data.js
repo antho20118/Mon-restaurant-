@@ -9,6 +9,7 @@ const RECIPES = [
   { id: 'steak_frites',     name: 'Steak-frites',          cat: 'plat',    emoji: '🥩', price: 18, cookTime: 7000, unlockLevel: 1, unlockCost: 0 },
   { id: 'ratatouille',      name: 'Ratatouille',           cat: 'plat',    emoji: '🍆', price: 15, cookTime: 6000, unlockLevel: 2, unlockCost: 200 },
   { id: 'coq_au_vin',       name: 'Coq au vin',            cat: 'plat',    emoji: '🍗', price: 20, cookTime: 8000, unlockLevel: 3, unlockCost: 300 },
+  { id: 'boeuf_bourguignon', name: 'Bœuf bourguignon',     cat: 'plat',    emoji: '🥘', price: 22, cookTime: 8500, unlockLevel: 4, unlockCost: 450 },
   { id: 'magret',           name: 'Magret de canard',      cat: 'plat',    emoji: '🦆', price: 24, cookTime: 8000, unlockLevel: 5, unlockCost: 600 },
   { id: 'bouillabaisse',    name: 'Bouillabaisse',         cat: 'plat',    emoji: '🐟', price: 26, cookTime: 9000, unlockLevel: 6, unlockCost: 800 },
 
