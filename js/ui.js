@@ -138,7 +138,7 @@ function renderChallenge() {
   bar.innerHTML = `
     <span class="challenge-emoji">${type.emoji}</span>
     <span class="challenge-label">Défi du jour : ${label}</span>
-    <div class="challenge-progress-track"><div class="challenge-progress-fill" style="width:${pct}%"></div></div>
+    <div class="challenge-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="${challenge.target}" aria-valuenow="${progress}" aria-label="Progression du défi du jour"><div class="challenge-progress-fill" style="width:${pct}%"></div></div>
     <span class="challenge-progress-text">${progress}/${challenge.target}</span>
     <span class="challenge-reward">🎁 +${challenge.reward}€</span>
   `;
@@ -218,7 +218,7 @@ function renderStations() {
       <div class="station-card busy">
         <div class="station-title">Poste ${i + 1} — ${recipe.emoji} ${recipe.name}</div>
         ${isPizza ? renderPizzaShow(st.progress) : ''}
-        <div class="progress-track">
+        <div class="progress-track" role="progressbar" aria-label="Cuisson de ${recipe.name}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pct)}">
           <div class="progress-zones"></div>
           <div class="progress-fill" style="width:${pct}%"></div>
         </div>
@@ -237,10 +237,10 @@ function renderReady() {
     const recipe = recipeById(dish.recipeId);
     const q = QUALITY[dish.quality];
     return `
-      <div class="dish-card q-${dish.quality}" onclick="handleServeDish(${dish.id}, this)">
-        <div class="dish-name">${recipe.emoji} ${recipe.name}</div>
-        <div class="quality-tag">${q.emoji} ${q.label}</div>
-      </div>`;
+      <button type="button" class="dish-card q-${dish.quality}" onclick="handleServeDish(${dish.id}, this)" aria-label="Servir : ${recipe.name}, ${q.label}">
+        <span class="dish-name">${recipe.emoji} ${recipe.name}</span>
+        <span class="quality-tag">${q.emoji} ${q.label}</span>
+      </button>`;
   }).join('');
 }
 
@@ -253,12 +253,15 @@ function renderControlBar() {
     timerWrap.classList.remove('hidden');
     const pct = runtime.dayDuration > 0 ? (runtime.dayTimeLeft / runtime.dayDuration) * 100 : 0;
     el('dayTimerBar').style.width = `${pct}%`;
+    timerWrap.setAttribute('aria-valuenow', Math.round(pct));
   } else {
     btnStart.disabled = false;
     btnStart.textContent = '▶️ Ouvrir le service';
     timerWrap.classList.add('hidden');
   }
-  el('btnSound').textContent = state.soundEnabled ? '🔊' : '🔇';
+  const btnSound = el('btnSound');
+  btnSound.textContent = state.soundEnabled ? '🔊' : '🔇';
+  btnSound.setAttribute('aria-label', state.soundEnabled ? 'Couper le son' : 'Activer le son');
 }
 
 function handleDressClick(stationIndex, buttonEl) {
@@ -294,17 +297,44 @@ function handleServeDish(dishId, cardEl) {
 
 // ---------- Modales ----------
 
+let lastFocusedBeforeModal = null;
+
+// Rend le reste de la page inerte (hors clavier, hors lecteur d'écran) pendant
+// qu'une modale est ouverte, pour éviter qu'un utilisateur au clavier ne "sorte"
+// de la modale vers des boutons masqués derrière l'overlay.
+function setBackgroundInert(isInert) {
+  const app = el('app');
+  if (!app) return;
+  Array.from(app.children).forEach(child => {
+    if (child.id !== 'modalOverlay' && child.id !== 'toastContainer') child.inert = isInert;
+  });
+}
+
 function openModal(html) {
+  lastFocusedBeforeModal = document.activeElement;
   el('modalContent').innerHTML = html;
   el('modalOverlay').classList.remove('hidden');
   runtime.paused = true;
+  setBackgroundInert(true);
+  el('modalContent').focus();
 }
 
 function closeModal() {
   el('modalOverlay').classList.add('hidden');
   el('modalContent').innerHTML = '';
   runtime.paused = false;
+  setBackgroundInert(false);
+  if (lastFocusedBeforeModal && typeof lastFocusedBeforeModal.focus === 'function') {
+    lastFocusedBeforeModal.focus();
+  }
+  lastFocusedBeforeModal = null;
 }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !el('modalOverlay').classList.contains('hidden')) {
+    closeModal();
+  }
+});
 
 function chooseRecipeForStation(stationIndex) {
   const wanted = {};
