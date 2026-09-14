@@ -180,6 +180,44 @@ npm test        # lance toute la suite (démarre et arrête le serveur seul)
   Chromium et lance `npm test` à chaque pull request et à chaque push sur
   `main`, avec le rapport HTML publié en artefact en cas d'échec.
 
+## Playtest simulé (équilibrage)
+
+Un vrai playtest avec des joueurs externes n'est pas possible depuis cet
+environnement (voir la roadmap ci-dessous). À la place, `scripts/simulate-playtest.js`
+fait jouer **le vrai jeu servi tel quel** (pas une réimplémentation des
+règles) par un bot qui prend des décisions raisonnables : il assigne les
+postes de cuisson à la recette la plus demandée, dresse les plats dans la
+zone "parfait" avec un timing volontairement imparfait (pour imiter un
+humain plutôt qu'un joueur parfait), sert tout plat prêt immédiatement, et
+dépense l'argent disponible en achetant systématiquement l'amélioration
+abordable la moins chère (recette > décoration > vitesse > place > poste).
+
+```
+npm run simulate            # 5 parties indépendantes x 40 jours simulés (par défaut)
+npm run simulate -- 10 60   # personnalisable : nombre de parties, nombre de jours
+```
+
+Le script exploite le fait que `tick()` avance l'état d'un pas fixe de
+100 ms à chaque appel, quelle que soit la durée réelle écoulée : au lieu
+d'attendre le `setInterval` du jeu, on appelle `tick()` en boucle serrée
+dans la page, ce qui compresse une journée entière de service (~1 minute
+réelle en jouant normalement) en moins d'une seconde. Un rapport agrégé
+(courbe de niveau, argent, taux de clients perdus, réussite du défi du
+jour) s'affiche dans la console et le détail par jour et par partie est
+écrit dans `scripts/last-simulation-report.json` (ignoré par git).
+
+**Constat issu de la dernière exécution (5 parties x 40 jours) :** les 5
+parties atteignent *exactement* le niveau maximum (12/12) et débloquent
+*les 17 recettes non-événement* entre le jour 26 et le jour 31 — puis
+n'ont plus rien à acheter pour le tiers restant de la partie, avec de
+l'argent qui s'accumule sans usage. Le contenu de progression est donc
+sous-dimensionné par rapport à la durée d'une partie assidue : il manque
+un puits de dépense en fin de partie (plus de paliers, un système de
+prestige, du contenu cosmétique). Le taux de clients perdus reste par
+ailleurs correct sur les 5 premiers jours (~6-7% en moyenne) avec un pic
+ponctuel autour du jour 6 (avant que les premières améliorations de
+capacité ne soient rentables), qui se résorbe ensuite.
+
 ## Différenciateur produit
 
 L'idée pitchée est de miser sur une **authenticité culinaire réelle** plutôt
@@ -198,9 +236,11 @@ que sur un habillage générique :
 - **Encore d'autres événements saisonniers** (menu de Saint-Valentin…) sur le
   modèle du menu de Noël et de la Terrasse d'été déjà en place — cohérent
   avec l'idée de monétisation par événements limités dans le temps.
-- **Vrai playtest d'équilibrage** avec des joueurs externes : tous les
-  chiffres (prix, temps de cuisson, cibles de défi, seuils de niveau) sont
-  posés à dire d'expert et jamais validés en conditions réelles.
+- **Vrai playtest d'équilibrage** avec des joueurs externes : un playtest
+  *simulé* existe désormais (voir la section dédiée ci-dessus) et a déjà
+  révélé un manque de contenu de fin de partie, mais seul un joueur humain
+  peut juger si le jeu est *amusant* (ressenti du timing, plaisir de la
+  progression) — les chiffres bruts d'un bot ne remplacent pas ce retour.
 - **Icônes de plats dessinées sur mesure** : la passe de direction
   artistique n'a touché que l'habillage (marque, stats, typographie), pas
   les emoji de contenu — un chantier à part de par son ampleur (16+ items).
