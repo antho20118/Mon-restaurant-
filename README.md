@@ -40,7 +40,9 @@ passer) présente la cuisine, le service et la boutique.
    ambiance) : 🎄 Menu de Noël ou ☀️ Terrasse d'été, tous deux à partir du
    niveau 3 et du jour 5.
 6. Le niveau du restaurant progresse avec le chiffre d'affaires cumulé et
-   débloque progressivement du contenu plus avancé (et plus rentable).
+   débloque progressivement du contenu plus avancé (et plus rentable),
+   jusqu'au niveau 12 (Plateau d'huîtres, Homard thermidor, Soufflé au
+   Grand Marnier pour les plus hauts niveaux).
 7. Un **défi du jour** est affiché en permanence juste sous l'en-tête
    (servir un nombre de plats, réussir des dressages parfaits, ne perdre
    aucun client, atteindre une recette, servir un menu complet…). Le
@@ -68,8 +70,9 @@ paiement (Stripe côté web, `MarketplaceService` côté Roblox).
   restaurant (`state.money`), avec un taux qui s'améliore sur les gros packs
   — le schéma classique des packs de monnaie premium, jusqu'à la "Caisse du
   patron" (49,99$, badge "Meilleure offre") pour les plus gros joueurs.
-- **Pass permanent** (`GAMEPASSES`) : un achat unique qui accorde un bonus
-  pour toujours (ex. +10% de pourboires), à l'image d'un gamepass Roblox.
+- **Pass permanent** (`GAMEPASSES`, 2 pass cumulables) : un achat unique
+  qui accorde un bonus pour toujours (+10% ou +8% de pourboires), à
+  l'image d'un gamepass Roblox.
 - **Déblocage instantané** (bouton ⚡ dans les onglets Recettes et
   Décoration) : paie un prix de démo proportionnel au coût normal pour
   obtenir immédiatement un item sans attendre le niveau ou l'argent

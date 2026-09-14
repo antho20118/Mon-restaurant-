@@ -40,16 +40,24 @@ test.describe('Simulation d\'achats en argent réel', () => {
     expect(moneyAfter - moneyBefore).toBe(9000);
   });
 
-  test('le pass permanent ajoute un bonus de pourboire durable', async ({ page }) => {
-    await gotoWithSave(page, { premiumWalletDemo: 10 });
+  test('chaque pass permanent ajoute son bonus de pourboire durable, et ils cumulent', async ({ page }) => {
+    await gotoWithSave(page, { premiumWalletDemo: 100 });
     await page.click('#btnShop');
     await page.click('.tab:has-text("Premium")');
 
-    const tipBefore = await page.evaluate(() => tipMultiplier());
-    await page.click('button:has-text("6.99$")');
-    await page.waitForTimeout(100);
-    const tipAfter = await page.evaluate(() => tipMultiplier());
-    expect(tipAfter).toBeCloseTo(tipBefore + 0.10, 5);
+    const passes = await page.evaluate(() => GAMEPASSES.map((g) => ({ id: g.id, tipBonus: g.tipBonus })));
+    expect(passes.length).toBeGreaterThan(0);
+
+    let expectedTip = await page.evaluate(() => tipMultiplier());
+    for (const pass of passes) {
+      await page.evaluate((id) => buyGamepass(id), pass.id);
+      await page.waitForTimeout(50);
+      expectedTip += pass.tipBonus;
+      const tipNow = await page.evaluate(() => tipMultiplier());
+      expect(tipNow).toBeCloseTo(expectedTip, 5);
+      const owned = await page.evaluate((id) => state.purchasedGamepasses.includes(id), pass.id);
+      expect(owned).toBe(true);
+    }
   });
 
   test('un solde de démo insuffisant refuse l\'achat sans rien débiter', async ({ page }) => {
