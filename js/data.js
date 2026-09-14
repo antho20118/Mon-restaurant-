@@ -5,6 +5,7 @@ const RECIPES = [
   { id: 'salade_cesar',     name: 'Salade César',          cat: 'entree',  emoji: '🥗', price: 8,  cookTime: 4000, unlockLevel: 1, unlockCost: 0 },
   { id: 'soupe_oignon',     name: "Soupe à l'oignon",      cat: 'entree',  emoji: '🍲', price: 9,  cookTime: 5000, unlockLevel: 2, unlockCost: 150 },
   { id: 'escargots',        name: 'Escargots de Bourgogne', cat: 'entree',  emoji: '🐌', price: 12, cookTime: 5000, unlockLevel: 4, unlockCost: 400 },
+  { id: 'huitres',          name: "Plateau d'huîtres",     cat: 'entree',  emoji: '🦪', price: 16, cookTime: 4500, unlockLevel: 6, unlockCost: 900 },
 
   { id: 'steak_frites',     name: 'Steak-frites',          cat: 'plat',    emoji: '🥩', price: 18, cookTime: 7000, unlockLevel: 1, unlockCost: 0 },
   { id: 'ratatouille',      name: 'Ratatouille',           cat: 'plat',    emoji: '🍆', price: 15, cookTime: 6000, unlockLevel: 2, unlockCost: 200 },
@@ -13,11 +14,13 @@ const RECIPES = [
   { id: 'boeuf_bourguignon', name: 'Bœuf bourguignon',     cat: 'plat',    emoji: '🥘', price: 22, cookTime: 8500, unlockLevel: 4, unlockCost: 450 },
   { id: 'magret',           name: 'Magret de canard',      cat: 'plat',    emoji: '🦆', price: 24, cookTime: 8000, unlockLevel: 5, unlockCost: 600 },
   { id: 'bouillabaisse',    name: 'Bouillabaisse',         cat: 'plat',    emoji: '🐟', price: 26, cookTime: 9000, unlockLevel: 6, unlockCost: 800 },
+  { id: 'homard_thermidor', name: 'Homard thermidor',      cat: 'plat',    emoji: '🦞', price: 32, cookTime: 9500, unlockLevel: 8, unlockCost: 1800 },
 
   { id: 'creme_brulee',     name: 'Crème brûlée',          cat: 'dessert', emoji: '🍮', price: 10, cookTime: 5000, unlockLevel: 1, unlockCost: 0 },
   { id: 'mousse_chocolat',  name: 'Mousse au chocolat',    cat: 'dessert', emoji: '🍫', price: 9,  cookTime: 4000, unlockLevel: 2, unlockCost: 150 },
   { id: 'tarte_tatin',      name: 'Tarte Tatin',           cat: 'dessert', emoji: '🥧', price: 11, cookTime: 5500, unlockLevel: 3, unlockCost: 250 },
   { id: 'profiteroles',     name: 'Profiteroles',          cat: 'dessert', emoji: '🍨', price: 13, cookTime: 6000, unlockLevel: 5, unlockCost: 500 },
+  { id: 'souffle_grand_marnier', name: 'Soufflé au Grand Marnier', cat: 'dessert', emoji: '🍰', price: 17, cookTime: 6500, unlockLevel: 7, unlockCost: 1100 },
 
   // Menu de Noël — débloqué en une fois via l'onglet Événement de la boutique, pas à l'unité.
   { id: 'veloute_chataignes', name: 'Velouté de châtaignes',     cat: 'entree',  emoji: '🌰', price: 11, cookTime: 4500, unlockLevel: 3, unlockCost: 0, event: 'noel' },
@@ -80,7 +83,7 @@ const SPEED_ITEMS = [
 ];
 
 // Chiffre d'affaires cumulé nécessaire pour atteindre le niveau N (index = niveau)
-const LEVEL_THRESHOLDS = [0, 0, 250, 700, 1500, 3000, 5500, 9500, 16000, 26000, 42000];
+const LEVEL_THRESHOLDS = [0, 0, 250, 700, 1500, 3000, 5500, 9500, 16000, 26000, 42000, 65000, 95000];
 
 // À partir de ce niveau, une partie des clients commandent un menu (entrée + plat)
 const COMBO_MIN_LEVEL = 4;
@@ -105,6 +108,7 @@ const COIN_PACKS = [
 
 const GAMEPASSES = [
   { id: 'pass_chef', name: 'Pass Chef étoilé', emoji: '⭐', priceUSD: 6.99, tipBonus: 0.10, desc: 'Bonus permanent : +10% sur tous les pourboires, pour toujours.' },
+  { id: 'pass_maitre_hotel', name: "Pass Maître d'hôtel", emoji: '🎩', priceUSD: 9.99, tipBonus: 0.08, desc: 'Bonus permanent : +8% sur tous les pourboires, pour toujours.' },
 ];
 
 // Bonus de connexion : une récompense par jour calendaire réel (pas par jour de service),
