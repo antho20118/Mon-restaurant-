@@ -3,7 +3,8 @@
   "private": true,
   "description": "Prototype de simulateur de restaurant, en JavaScript vanilla.",
   "scripts": {
-    "test": "playwright test"
+    "test": "playwright test",
+    "simulate": "node scripts/simulate-playtest.js"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1",
